@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
+using OlosBotApp.Models;
 
 namespace OlosBotApp.Dialogs
 {
@@ -19,11 +20,20 @@ namespace OlosBotApp.Dialogs
         {
             var activity = await result as Activity;
 
+            //We need to keep this data so we know who to send the message to. Assume this would be stored somewhere, e.g. an Azure Table
+            OlosActivityModel.userId = activity.Recipient.Id;
+            OlosActivityModel.userName = activity.Recipient.Name;
+            OlosActivityModel.botId = activity.From.Id;
+            OlosActivityModel.botName = activity.From.Name;
+            OlosActivityModel.serviceUrl = activity.ServiceUrl;
+            OlosActivityModel.channelId = activity.ChannelId;
+            OlosActivityModel.conversationId = activity.Conversation.Id;
+
             // calculate something for us to return
             int length = (activity.Text ?? string.Empty).Length;
 
             // return our reply to the user
-            await context.PostAsync($"You sent {activity.Text} which was {length} characters");
+            await context.PostAsync($"Você enviou {activity.Text} [{length}] caracteres");
 
             context.Wait(MessageReceivedAsync);
         }
