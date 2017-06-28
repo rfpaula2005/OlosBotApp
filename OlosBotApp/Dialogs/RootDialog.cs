@@ -24,9 +24,7 @@ namespace OlosBotApp.Dialogs
         {
             var activity = await result as Activity;
 
-            var appId = ConfigurationManager.AppSettings["MicrosoftAppId"];
-            var appPass = ConfigurationManager.AppSettings["MicrosoftAppPassword"];
-            var appBotId = ConfigurationManager.AppSettings["BotId"];
+            ConnectorClient connector;
             DateTime dt_messageReceivedInicio;
             DateTime dt_messageReceivedFim;
 
@@ -39,6 +37,9 @@ namespace OlosBotApp.Dialogs
             OlosActivityModel.serviceUrl = activity.ServiceUrl;
             OlosActivityModel.channelId = activity.ChannelId;
             OlosActivityModel.conversationId = activity.Conversation.Id;
+
+            //ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+            //var temp = ((Microsoft.Bot.Connector.MicrosoftAppCredentials)connector.Credentials).MicrosoftAppId;
 
             try
             {
@@ -53,7 +54,11 @@ namespace OlosBotApp.Dialogs
                 int length = (activity.Text ?? string.Empty).Length;
                 await context.PostAsync($"Você enviou {activity.Text} [{length}] caracteres");
 
-                await context.PostAsync($"Message Count: {this.count++} \n\n Bot ID: {appBotId} \n\n appId: [{appId}] \n\n userInfo:{activity.Recipient.Id},{activity.Recipient.Name} \n\n botInfo:{activity.From.Id},{activity.From.Name} \n\n ServiceUrl:{activity.ServiceUrl} \n\n ChannelId:{activity.ChannelId} \n\n Conversation:{activity.Conversation.Id} \n\n Duração: {(dt_messageReceivedInicio - dt_messageReceivedInicio).TotalSeconds} segundos \n\n {responseFromServer} ");
+                connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                var lc_appId = ((Microsoft.Bot.Connector.MicrosoftAppCredentials)connector.Credentials).MicrosoftAppId;
+                var lc_appPass = ((Microsoft.Bot.Connector.MicrosoftAppCredentials)connector.Credentials).MicrosoftAppPassword;
+
+                await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n userInfo:{activity.From.Id},{activity.From.Name} \n\n botInfo:{activity.Recipient.Id},{activity.Recipient.Name} \n\n ServiceUrl:{activity.ServiceUrl} \n\n ChannelId:{activity.ChannelId} \n\n Conversation:{activity.Conversation.Id} \n\n Duração: {(dt_messageReceivedInicio - dt_messageReceivedInicio).TotalSeconds} segundos \n\n {responseFromServer} ");
                 context.Wait(MessageReceivedAsync);
             }
             catch (WebException wex)

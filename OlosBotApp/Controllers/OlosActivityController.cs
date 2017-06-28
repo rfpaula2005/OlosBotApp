@@ -67,6 +67,7 @@ namespace OlosBotApp.Controllers
             var connector = new ConnectorClient(new Uri(OlosActivityModel.serviceUrl));
 
             IMessageActivity message = Activity.CreateMessageActivity();
+
             if (!string.IsNullOrEmpty(conversationId) && !string.IsNullOrEmpty(channelId))
             {
                 message.ChannelId = channelId;

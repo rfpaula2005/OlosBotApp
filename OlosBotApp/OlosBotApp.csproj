@@ -139,6 +139,7 @@
     </Compile>
     <Compile Include="Models\OlosActivityModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\MultiCredentialProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
