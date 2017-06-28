@@ -22,66 +22,76 @@ namespace OlosBotApp
 
     public class AppEntity : TableEntity
     {
+        public string AppPassword { get; set; }
+        public string BotId { get; set; }
+        public string OlosEngineUri { get; set; }
+
         public AppEntity(string AppId, string AppPassword)
         {
-            this.PartitionKey = AppId;
-            this.RowKey = AppPassword;
+            this.PartitionKey = "BotCredential";
+            this.RowKey = AppId;
+            this.AppPassword = AppPassword;
         }
 
         public AppEntity() { }
-
-        public string BotId { get; set; }
     }
     /// <summary>
     /// A sample ICredentialProvider that is configured by multiple MicrosoftAppIds and MicrosoftAppPasswords
     /// </summary>
     public class MultiCredentialProvider : ICredentialProvider
     {
-        public Dictionary<string, string> Credentials = new Dictionary<string, string>
-        {
-            { "YOUR_MSAPP_ID_1", "YOUR_MSAPP_PASSWORD_1" },
-            { "YOUR_MSAPP_ID_2", "YOUR_MSAPP_PASSWORD_2" }
-        };
-
+        protected bool AuthenticationEnabled = true;
         public Task<bool> IsValidAppIdAsync(string appId)
         {
             // Set storage Account
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-            // Get a reference to a table named "peopleTable"
+            // Get a reference to a table named "OlosBotCredentials"
             CloudTable table = tableClient.GetTableReference("OlosBotCredentials");
 
-            // Create the CloudTable if it does not exist
-            //await table.CreateIfNotExistsAsync();
-
             // Create a new customer entity.
-            //AppEntity botApp1 = new AppEntity(ConfigurationManager.AppSettings["MicrosoftAppId"], ConfigurationManager.AppSettings["MicrosoftAppPassword"]);
-            //botApp1.BotId = ConfigurationManager.AppSettings["BotId"];
+            AppEntity botApp1 = new AppEntity(ConfigurationManager.AppSettings["MicrosoftAppId"], ConfigurationManager.AppSettings["MicrosoftAppPassword"]);
+            botApp1.BotId = ConfigurationManager.AppSettings["BotId"];
+            botApp1.OlosEngineUri = "https://xxx.yyy.com.br";
 
             // Create the TableOperation that inserts the customer entity.
-            //TableOperation insertOperation = TableOperation.Insert(botApp1);
-
+            TableOperation insertOperation = TableOperation.Insert(botApp1);
+            
             // Execute the insert operation.
-            //table.ExecuteAsync(insertOperation);
+            table.Execute(insertOperation);
+          
 
             // Create a retrieve operation that takes a customer entity.
-            TableOperation retrieveOperation = TableOperation.Retrieve<AppEntity>(ConfigurationManager.AppSettings["MicrosoftAppId"], ConfigurationManager.AppSettings["MicrosoftAppPassword"]);
+            TableOperation retrieveOperation = TableOperation.Retrieve<AppEntity>("BotCredential", appId);
 
             // Execute the retrieve operation.
-            TableResult retrievedResult = table.ExecuteAsync(retrieveOperation).Result;
+            TableResult retrievedResult = table.Execute(retrieveOperation);
 
-            return Task.FromResult(this.Credentials.ContainsKey(appId));
+            return Task.FromResult(((AppEntity)retrievedResult.Result).RowKey.Equals(appId));
         }
 
         public Task<string> GetAppPasswordAsync(string appId)
         {
-            return Task.FromResult(this.Credentials.ContainsKey(appId) ? this.Credentials[appId] : null);
+            // Set storage Account
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
+            // Create the table client.
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+            // Get a reference to a table named "OlosBotCredentials"
+            CloudTable table = tableClient.GetTableReference("OlosBotCredentials");
+
+            // Create a retrieve operation that takes a customer entity.
+            TableOperation retrieveOperation = TableOperation.Retrieve<AppEntity>("BotCredential", appId);
+
+            // Execute the retrieve operation.
+            TableResult retrievedResult = table.Execute(retrieveOperation);
+
+            return Task.FromResult(((AppEntity)retrievedResult.Result).RowKey.Equals(appId) ? ((AppEntity)retrievedResult.Result).AppPassword : null);
         }
 
         public Task<bool> IsAuthenticationDisabledAsync()
         {
-            return Task.FromResult(!this.Credentials.Any());
+            return Task.FromResult(!AuthenticationEnabled);
         }
     }
 
