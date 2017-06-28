@@ -16,6 +16,7 @@ namespace OlosBotApp.Models
         public static string botId { get; set; }
         public static string botName { get; set; }
         public static string serviceUrl { get; set; }
+        public static string texto { get; set; }
 
 
         public OlosActivityModel()
@@ -23,12 +24,13 @@ namespace OlosBotApp.Models
 
         }
 
-        public OlosActivityModel(string v_conversationId, string v_userId, string v_channelId, string v_serviceUrl)
+        public OlosActivityModel(string v_conversationId, string v_userId, string v_channelId, string v_serviceUrl, string v_texto)
         {
             OlosActivityModel.channelId = v_channelId;
             OlosActivityModel.conversationId = v_conversationId;
             OlosActivityModel.userId = v_userId;
             OlosActivityModel.serviceUrl = v_serviceUrl;
+            OlosActivityModel.texto = v_texto;
         }
 
     }

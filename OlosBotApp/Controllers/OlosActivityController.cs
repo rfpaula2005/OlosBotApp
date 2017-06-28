@@ -60,8 +60,10 @@ namespace OlosBotApp.Controllers
 
         public static async Task Resume(string conversationId, string channelId)
         {
-            var userAccount = new ChannelAccount(OlosActivityModel.userId, OlosActivityModel.userName);
+            //var userAccount = new ChannelAccount(OlosActivityModel.userId, OlosActivityModel.userName);
+            //var botAccount = new ChannelAccount(OlosActivityModel.botId, OlosActivityModel.botName);
             var botAccount = new ChannelAccount(OlosActivityModel.botId, OlosActivityModel.botName);
+            var userAccount = new ChannelAccount(OlosActivityModel.userId, OlosActivityModel.userName);
             var connector = new ConnectorClient(new Uri(OlosActivityModel.serviceUrl));
 
             IMessageActivity message = Activity.CreateMessageActivity();
