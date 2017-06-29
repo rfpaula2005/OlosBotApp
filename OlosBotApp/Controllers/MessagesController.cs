@@ -7,8 +7,9 @@ using Microsoft.Bot.Connector;
 using Autofac;
 using System.Security.Claims;
 using System.Web;
+using System.Linq;
+using Microsoft.Bot.Builder.Dialogs.Internals;
 using OlosBotApp.Utils;
-
 
 
 
@@ -44,6 +45,28 @@ namespace OlosBotApp
             {
                 await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
             }
+            else if (activity.Type == ActivityTypes.ConversationUpdate)
+            {
+                IConversationUpdateActivity update = activity;
+                // resolve the connector client from the container to make sure that it is 
+                // instantiated with the right MicrosoftAppCredentials
+                using (var scope = DialogModule.BeginLifetimeScope(Conversation.Container, activity))
+                {
+                    var client = scope.Resolve<IConnectorClient>();
+                    if (update.MembersAdded.Any())
+                    {
+                        var reply = activity.CreateReply();
+                        foreach (var newMember in update.MembersAdded)
+                        {
+                            if (newMember.Id != activity.Recipient.Id)
+                            {
+                                reply.Text = $"Bem vindo {newMember.Name}!";
+                                await client.Conversations.ReplyToActivityAsync(reply);
+                            }
+                        }
+                    }
+                }
+            }
             else
             {
                 HandleSystemMessage(activity);
@@ -58,12 +81,6 @@ namespace OlosBotApp
             {
                 // Implement user deletion here
                 // If we handle user deletion, return a real message
-            }
-            else if (message.Type == ActivityTypes.ConversationUpdate)
-            {
-                // Handle conversation state changes, like members being added and removed
-                // Use Activity.MembersAdded and Activity.MembersRemoved and Activity.Action for info
-                // Not available in all channels
             }
             else if (message.Type == ActivityTypes.ContactRelationUpdate)
             {

@@ -81,6 +81,27 @@ namespace OlosBotApp.Utils
             return retrievedResult;
         }
 
+        public static AppEntity getAppEntityData(string strCloudTableName, string PartitionKey, string RowKey)
+        {
+            // Set storage Account
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
+
+            // Create the table client.
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+            // Get a reference to a table named "OlosBotCredentials"
+            CloudTable table = tableClient.GetTableReference(strCloudTableName);
+            // Create a retrieve operation that takes a customer entity.
+            TableOperation retrieveOperation = TableOperation.Retrieve<AppEntity>(PartitionKey, RowKey);
+            // Execute the retrieve operation.
+            TableResult retrievedResult = table.Execute(retrieveOperation);
+            // Convert to AppEntity 
+            AppEntity retrievedAppEntity = (AppEntity)retrievedResult.Result;
+
+            return retrievedAppEntity;
+        }
+
+
+
         public static void insAppEntity(string strCloudTableName, string PartitionKey, string RowKey, string appPasword, string botId, string OlosEngineUri)
         {
             // Set storage Account
