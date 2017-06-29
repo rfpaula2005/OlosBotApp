@@ -33,16 +33,10 @@ namespace OlosBotApp.Dialogs
             ConversationReference conversationReference = activity.ToConversationReference();
             string str_conversationReference = JsonConvert.SerializeObject(conversationReference);
             ConnectorClient connector;
-
             string http_code;
+
             //We need to keep this data so we know who to send the message to. Assume this would be stored somewhere, e.g. an Azure Table
             //OlosActivityModel.userId = activity.Recipient.Id;
-            //OlosActivityModel.userName = activity.Recipient.Name;
-            //OlosActivityModel.botId = activity.From.Id;
-            //OlosActivityModel.botName = activity.From.Name;
-            //OlosActivityModel.serviceUrl = activity.ServiceUrl;
-            //OlosActivityModel.channelId = activity.ChannelId;
-            //OlosActivityModel.conversationId = activity.Conversation.Id;
 
             connector = new ConnectorClient(new Uri(activity.ServiceUrl));
 

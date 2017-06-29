@@ -22,47 +22,44 @@ namespace OlosBotApp.Controllers
                     {
 
                     await Resume(OlosActivity); //We don't need to wait for this, just want to start the interruption here
+
                     //Return Success Message
-                    var http_return = new { Code = "001", Message = "Sucesso." };
+                    var http_return = new { Code = "SUC-001", Message = "OK" };
                     return Request.CreateResponse(HttpStatusCode.OK, http_return);
                 }
                 else
                 {
                     //Return Error Message
-                    var http_return = new { Code = "100", Message = "Você precisa iniciar uma conversa com o bot primeiro."};
-                    return Request.CreateResponse(HttpStatusCode.OK, http_return);
+                    var http_return = new { Code = "ERR-100", Message = "You must start a conversation first."};
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, http_return);
                 }
             }
+            catch (System.UriFormatException ex)
+            {
+                //Return Error Message
+                var http_return = new { Code = "ERR-101", Message = "Connector can´t be created. Check the serviceUrl.", Detail = ex.Message};
+                return Request.CreateResponse(HttpStatusCode.BadRequest, http_return);
+            }
+            catch (Microsoft.Rest.HttpOperationException ex)
+            {
+                //Return Error Message
+                var http_return = new { Code = "ERR-102", Message = "Conversation not found. Check the conversationId.", Detail = ex.Message };
+                return Request.CreateResponse(HttpStatusCode.BadRequest, http_return);
+            }
             catch (Exception ex)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
             }
-
-            /*
-            try
-            {
-                var http_return = new  {Code = "001", Message = "Sucesso."};
-                return Request.CreateResponse(HttpStatusCode.OK, http_return);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
-            */
-
-            //var resp = new HttpResponseMessage(HttpStatusCode.OK);
-            //resp.Content = new StringContent("Usuário cadastrado com sucesso!", System.Text.Encoding.UTF8, @"text/html");
-            //return resp;
-            //Implementar aqui
-            //return "Usuário cadastrado com sucesso!";
         }
 
 
+        //Create and send a message to user
         public static async Task Resume(OlosActivityModel OlosActivity)
         {
-
+            //Create ChannelsAccounts
             var botAccount = new ChannelAccount(OlosActivity.botId, OlosActivity.botName);
             var userAccount = new ChannelAccount(OlosActivity.userId, OlosActivity.userName);
+            //Create Connector
             var connector = new ConnectorClient(new Uri(OlosActivity.serviceUrl));
 
             IMessageActivity message = Activity.CreateMessageActivity();
@@ -76,10 +73,11 @@ namespace OlosBotApp.Controllers
                 OlosActivity.conversationId = (await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount)).Id;
             }
 
+            //Setup a message
             message.From = botAccount;
             message.Recipient = userAccount;
             message.Conversation = new ConversationAccount(id: OlosActivity.conversationId);
-            message.Text = "Hello, this is a notification";
+            message.Text = OlosActivity.text;
             message.Locale = "pt-BR";
             await connector.Conversations.SendToConversationAsync((Activity)message);
         }
