@@ -31,17 +31,21 @@ namespace OlosBotApp.Utils
     public class MultiCredentialProvider : ICredentialProvider
     {
         protected bool AuthenticationEnabled = true;
+
         public Task<bool> IsValidAppIdAsync(string appId)
         {
             // Set storage Account
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
+            // Set storage Table PartionKey
+            string PartitionKey = (ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] != null) ? ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] : "BotCredential";
+
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
             // Get a reference to a table named "OlosBotCredentials"
             CloudTable table = tableClient.GetTableReference("OlosBotCredentials");
 
             // Create a retrieve operation that takes a customer entity.
-            TableOperation retrieveOperation = TableOperation.Retrieve<AppEntity>("BotCredential", appId);
+            TableOperation retrieveOperation = TableOperation.Retrieve<AppEntity>(PartitionKey, appId);
 
             // Execute the retrieve operation.
             TableResult retrievedResult = table.Execute(retrieveOperation);
@@ -53,13 +57,16 @@ namespace OlosBotApp.Utils
         {
             // Set storage Account
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
+            // Set storage Table PartionKey
+            string PartitionKey = (ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] != null) ? ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] : "BotCredential";
+
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
             // Get a reference to a table named "OlosBotCredentials"
             CloudTable table = tableClient.GetTableReference("OlosBotCredentials");
 
             // Create a retrieve operation that takes a customer entity.
-            TableOperation retrieveOperation = TableOperation.Retrieve<AppEntity>("BotCredential", appId);
+            TableOperation retrieveOperation = TableOperation.Retrieve<AppEntity>(PartitionKey, appId);
 
             // Execute the retrieve operation.
             TableResult retrievedResult = table.Execute(retrieveOperation);

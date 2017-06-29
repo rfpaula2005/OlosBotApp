@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Newtonsoft.Json;
+
 
 namespace OlosBotApp.Models
 {
@@ -9,14 +11,14 @@ namespace OlosBotApp.Models
     public class OlosActivityModel
     {
 
-        public static string channelId { get; set; }
-        public static string conversationId { get; set; }
-        public static string userId { get; set; }
-        public static string userName { get; set; }
-        public static string botId { get; set; }
-        public static string botName { get; set; }
-        public static string serviceUrl { get; set; }
-        public static string texto { get; set; }
+        public string channelId { get; set; }
+        public string conversationId { get; set; }
+        public string userId { get; set; }
+        public string userName { get; set; }
+        public string botId { get; set; }
+        public string botName { get; set; }
+        public string serviceUrl { get; set; }
+        public string text { get; set; }
 
 
         public OlosActivityModel()
@@ -24,13 +26,16 @@ namespace OlosBotApp.Models
 
         }
 
-        public OlosActivityModel(string v_conversationId, string v_userId, string v_channelId, string v_serviceUrl, string v_texto)
+        public OlosActivityModel(string v_userId, string v_userName, string v_botId, string v_botName, string v_channelId, string v_conversationId, string v_text,   string v_serviceUrl)
         {
-            OlosActivityModel.channelId = v_channelId;
-            OlosActivityModel.conversationId = v_conversationId;
-            OlosActivityModel.userId = v_userId;
-            OlosActivityModel.serviceUrl = v_serviceUrl;
-            OlosActivityModel.texto = v_texto;
+            userId = v_userId;
+            userName = v_userName;
+            botId = v_botId;
+            botName = v_botName;
+            channelId = v_channelId;
+            conversationId = v_conversationId;
+            text = v_text;
+            serviceUrl = v_serviceUrl;
         }
 
     }

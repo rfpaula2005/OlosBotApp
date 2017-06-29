@@ -131,7 +131,6 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\OlosActivityController.cs" />
-    <Compile Include="Controllers\OlosBotBackStageController.cs" />
     <Compile Include="Dialogs\RootDialog.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="Global.asax.cs">

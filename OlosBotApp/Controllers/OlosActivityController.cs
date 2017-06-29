@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -15,21 +13,23 @@ namespace OlosBotApp.Controllers
     {
         [AcceptVerbs("POST")]
         [Route("OlosSendMessage")]
-        public async Task<HttpResponseMessage> OlosSendMessage(OlosActivityModel Mensagem)
+        //public async Task<HttpResponseMessage> OlosSendMessage(OlosActivityModel Mensagem)
+        public async Task<HttpResponseMessage> OlosSendMessage(OlosActivityModel OlosActivity)
         {
-
             try
             {
-                if (!string.IsNullOrEmpty(OlosActivityModel.botId))
-                {
-                    await Resume(OlosActivityModel.conversationId, OlosActivityModel.channelId); //We don't need to wait for this, just want to start the interruption here
+                if (!string.IsNullOrEmpty(OlosActivity.conversationId))
+                    {
 
+                    await Resume(OlosActivity); //We don't need to wait for this, just want to start the interruption here
+                    //Return Success Message
                     var http_return = new { Code = "001", Message = "Sucesso." };
                     return Request.CreateResponse(HttpStatusCode.OK, http_return);
                 }
                 else
                 {
-                    var http_return = new { Code = "100", Message = "Você precisa iniciar uma conversa com o bot primeiro." + OlosActivityModel.botId + "->" + OlosActivityModel.channelId};
+                    //Return Error Message
+                    var http_return = new { Code = "100", Message = "Você precisa iniciar uma conversa com o bot primeiro."};
                     return Request.CreateResponse(HttpStatusCode.OK, http_return);
                 }
             }
@@ -58,33 +58,31 @@ namespace OlosBotApp.Controllers
         }
 
 
-        public static async Task Resume(string conversationId, string channelId)
+        public static async Task Resume(OlosActivityModel OlosActivity)
         {
-            //var userAccount = new ChannelAccount(OlosActivityModel.userId, OlosActivityModel.userName);
-            //var botAccount = new ChannelAccount(OlosActivityModel.botId, OlosActivityModel.botName);
-            var botAccount = new ChannelAccount(OlosActivityModel.botId, OlosActivityModel.botName);
-            var userAccount = new ChannelAccount(OlosActivityModel.userId, OlosActivityModel.userName);
-            var connector = new ConnectorClient(new Uri(OlosActivityModel.serviceUrl));
+
+            var botAccount = new ChannelAccount(OlosActivity.botId, OlosActivity.botName);
+            var userAccount = new ChannelAccount(OlosActivity.userId, OlosActivity.userName);
+            var connector = new ConnectorClient(new Uri(OlosActivity.serviceUrl));
 
             IMessageActivity message = Activity.CreateMessageActivity();
 
-            if (!string.IsNullOrEmpty(conversationId) && !string.IsNullOrEmpty(channelId))
+            if (!string.IsNullOrEmpty(OlosActivity.conversationId) && !string.IsNullOrEmpty(OlosActivity.channelId))
             {
-                message.ChannelId = channelId;
+                message.ChannelId = OlosActivity.channelId;
             }
             else
             {
-                OlosActivityModel.conversationId = (await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount)).Id;
+                OlosActivity.conversationId = (await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount)).Id;
             }
 
             message.From = botAccount;
             message.Recipient = userAccount;
-            message.Conversation = new ConversationAccount(id: OlosActivityModel.conversationId);
+            message.Conversation = new ConversationAccount(id: OlosActivity.conversationId);
             message.Text = "Hello, this is a notification";
             message.Locale = "pt-BR";
             await connector.Conversations.SendToConversationAsync((Activity)message);
         }
-
 
     }
 }
