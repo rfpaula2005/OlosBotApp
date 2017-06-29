@@ -7,8 +7,6 @@ using Microsoft.Bot.Connector;
 namespace OlosBotApp.Utils
 
 {
-
-
     /// <summary>
     /// A sample ICredentialProvider that is configured by multiple MicrosoftAppIds and MicrosoftAppPasswords
     /// </summary>
