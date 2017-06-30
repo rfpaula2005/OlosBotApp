@@ -9,6 +9,7 @@ using System.Net;
 using Newtonsoft.Json;
 using Microsoft.Bot.Builder.ConnectorEx;
 using OlosBotApp.Utils;
+using Olos.BotProtocol;
 //using System.Web;
 //using System.Security.Claims;
 
@@ -31,11 +32,12 @@ namespace OlosBotApp.Dialogs
 
             //Patern vars
             var activity = await result as Activity;
-            
+
             //Olos Add Vars
             //Store de reference to user and conversation (must be storage in a permanent repository)
-            ConversationReference conversationReference = activity.ToConversationReference();
-            string str_conversationReference = JsonConvert.SerializeObject(conversationReference);
+            //ConversationReference conversationReference = activity.ToConversationReference();
+            //string str_conversationReference = JsonConvert.SerializeObject(conversationReference);
+            string str_conversationReference;
             ConnectorClient connector;
             string http_code;
 
@@ -57,15 +59,19 @@ namespace OlosBotApp.Dialogs
                 //Tentar remover este acesso da Table
                 AppEntity retrievedAppEntity = Utils.AzureCloudStorageTable.getAppEntityData("OlosBotCredentials", PartitionKey, lc_appId);
 
+                Message ObjMessage = Message.ConvertToMessage(activity);
+                ObjMessage.AppId = lc_appId;
+                str_conversationReference = ObjMessage.GetJson();
+
                 string pattern = "(http_code=)([0-9][0-9][0-9])";
                 http_code = (Regex.Match(activity.Text, pattern, RegexOptions.IgnoreCase)).Value;
-                //string uri = "https://olosrepeaterfunction.azurewebsites.net/api/HttpTriggerCSharp1?code=ylw6l1SXaU6SqAae/4ee/Vq6fjNU6lYBXMdWTWeWPL8gznaLgHgaMA==&message=" + activity.Text + "&conversationreference=" + str_conversationReference + "&" + http_code;
                 string uri = retrievedAppEntity.OlosEngineUri + "&message=" + activity.Text + "&conversationreference=" + str_conversationReference + "&" + http_code;
                 Task<string> getStringTask = OlosFunctions.AccessTheWebAsync(uri);
                 string responseFromServer = await getStringTask;
+
                 // return our reply to the user
-                int length = (activity.Text ?? string.Empty).Length;
-                await context.PostAsync($"Você enviou {activity.Text} [{length}] caracteres");
+                //int length = (activity.Text ?? string.Empty).Length;
+                //await context.PostAsync($"Você enviou {activity.Text} [{length}] caracteres");
 
 
                 //string x = Microsoft.Bot.Connector.ClaimsIdentityEx.GetAppIdFromClaims((ClaimsIdentity)HttpContext.Current.User.Identity);

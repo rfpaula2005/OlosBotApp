@@ -5,6 +5,7 @@ using System.Web.Http;
 using OlosBotApp.Models;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
+using Olos.BotProtocol;
 
 namespace OlosBotApp.Controllers
 {
@@ -14,14 +15,14 @@ namespace OlosBotApp.Controllers
         [AcceptVerbs("POST")]
         [Route("OlosSendMessage")]
         //public async Task<HttpResponseMessage> OlosSendMessage(OlosActivityModel Mensagem)
-        public async Task<HttpResponseMessage> OlosSendMessage(OlosActivityModel OlosActivity)
+        public async Task<HttpResponseMessage> OlosSendMessage(Message OlosMessage)
         {
             try
             {
-                if (!string.IsNullOrEmpty(OlosActivity.conversationId))
+                if (!string.IsNullOrEmpty(OlosMessage.ConversationId))
                     {
 
-                    await Resume(OlosActivity); //We don't need to wait for this, just want to start the interruption here
+                    await Resume(OlosMessage); //We don't need to wait for this, just want to start the interruption here
 
                     //Return Success Message
                     var http_return = new { Code = "SUC-001", Message = "OK" };
@@ -54,32 +55,36 @@ namespace OlosBotApp.Controllers
 
 
         //Create and send a message to user
-        public static async Task Resume(OlosActivityModel OlosActivity)
+        public static async Task Resume(Message OlosMessage2)
         {
             //Create ChannelsAccounts
-            var botAccount = new ChannelAccount(OlosActivity.botId, OlosActivity.botName);
-            var userAccount = new ChannelAccount(OlosActivity.userId, OlosActivity.userName);
+            //var botAccount = new ChannelAccount(OlosMessage2.botId, OlosMessage2.botName);
+            //var userAccount = new ChannelAccount(OlosMessage2.userId, OlosMessage2.userName);
             //Create Connector
-            var connector = new ConnectorClient(new Uri(OlosActivity.serviceUrl));
+
+            var connector = new ConnectorClient(new Uri(OlosMessage2.ServiceUrl));
 
             IMessageActivity message = Activity.CreateMessageActivity();
 
-            if (!string.IsNullOrEmpty(OlosActivity.conversationId) && !string.IsNullOrEmpty(OlosActivity.channelId))
+            if (!string.IsNullOrEmpty(OlosMessage2.ConversationId) && !string.IsNullOrEmpty(OlosMessage2.ChannelId))
             {
-                message.ChannelId = OlosActivity.channelId;
+                message.ChannelId = OlosMessage2.ChannelId;
             }
             else
             {
-                OlosActivity.conversationId = (await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount)).Id;
+                OlosMessage2.ConversationId = (await connector.Conversations.CreateDirectConversationAsync(OlosMessage2.From.ConvertToChannelAccount(), OlosMessage2.To.ConvertToChannelAccount())).Id;
             }
 
+            await connector.Conversations.SendToConversationAsync((Activity)OlosMessage2.ConvertToActivity());
+
+
             //Setup a message
-            message.From = botAccount;
-            message.Recipient = userAccount;
-            message.Conversation = new ConversationAccount(id: OlosActivity.conversationId);
-            message.Text = OlosActivity.text;
-            message.Locale = "pt-BR";
-            await connector.Conversations.SendToConversationAsync((Activity)message);
+            //message.From = botAccount;
+            //message.Recipient = userAccount;
+            //message.Conversation = new ConversationAccount(id: OlosMessage2.conversationId);
+            //message.Text = OlosMessage2.text;
+            //message.Locale = "pt-BR";
+            //await connector.Conversations.SendToConversationAsync((Activity)message);
         }
 
     }
