@@ -61,7 +61,7 @@ namespace OlosBotApp.Dialogs
                 http_code = (Regex.Match(activity.Text, pattern, RegexOptions.IgnoreCase)).Value;
                 //string uri = "https://olosrepeaterfunction.azurewebsites.net/api/HttpTriggerCSharp1?code=ylw6l1SXaU6SqAae/4ee/Vq6fjNU6lYBXMdWTWeWPL8gznaLgHgaMA==&message=" + activity.Text + "&conversationreference=" + str_conversationReference + "&" + http_code;
                 string uri = retrievedAppEntity.OlosEngineUri + "&message=" + activity.Text + "&conversationreference=" + str_conversationReference + "&" + http_code;
-                Task<string> getStringTask = Functions.AccessTheWebAsync(uri);
+                Task<string> getStringTask = OlosFunctions.AccessTheWebAsync(uri);
                 string responseFromServer = await getStringTask;
                 // return our reply to the user
                 int length = (activity.Text ?? string.Empty).Length;
