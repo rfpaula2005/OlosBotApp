@@ -5,7 +5,7 @@ using System.Web.Http;
 using OlosBotApp.Utils;
 using System.Web;
 using System.Collections.Generic;
-using System.Configuration;
+
 
 namespace OlosBotApp.Controllers
 {
@@ -25,7 +25,8 @@ namespace OlosBotApp.Controllers
                 KeyValuePair<string, string>[] v_Cretentials = OlosFunctions.getHttpCredentials(httpContext);
 
                 //Verify Credentials
-                if (v_Cretentials.Length > 0 && v_Cretentials[0].Key == "username" && v_Cretentials[0].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserName"] && v_Cretentials[1].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserPasswd"])
+                //if (v_Cretentials.Length > 0 && v_Cretentials[0].Key == "username" && v_Cretentials[0].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserName"] && v_Cretentials[1].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserPasswd"])
+                if (OlosFunctions.verifyCredentials(v_Cretentials))
                 {
                     if (!string.IsNullOrEmpty(AppData.PartitionKey))
                     {

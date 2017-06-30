@@ -2,37 +2,55 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using OlosBotApp.Models;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
+using System.Web;
 using Olos.BotProtocol;
+using OlosBotApp.Utils;
+using System.Collections.Generic;
+
 
 namespace OlosBotApp.Controllers
 {
     [RoutePrefix("api/OlosBackStageActivity")]
     public class OlosActivityController : ApiController
     {
+        private HttpContext httpContext;
+
         [AcceptVerbs("POST")]
         [Route("OlosSendMessage")]
         //public async Task<HttpResponseMessage> OlosSendMessage(OlosActivityModel Mensagem)
         public async Task<HttpResponseMessage> OlosSendMessage(Message OlosMessage)
         {
+            httpContext = HttpContext.Current;
+
             try
             {
-                if (!string.IsNullOrEmpty(OlosMessage.ConversationId))
+                KeyValuePair<string, string>[] v_Cretentials = OlosFunctions.getHttpCredentials(httpContext);
+
+                //Verify Credentials
+                if (OlosFunctions.verifyCredentials(v_Cretentials))
+                {
+                    if (!string.IsNullOrEmpty(OlosMessage.ConversationId))
                     {
 
-                    await Resume(OlosMessage); //We don't need to wait for this, just want to start the interruption here
+                        await Resume(OlosMessage); //We don't need to wait for this, just want to start the interruption here
 
-                    //Return Success Message
-                    var http_return = new { Code = "SUC-001", Message = "OK" };
-                    return Request.CreateResponse(HttpStatusCode.OK, http_return);
+                        //Return Success Message
+                        var http_return = new { Code = "SUC-001", Message = "OK" };
+                        return Request.CreateResponse(HttpStatusCode.OK, http_return);
+                    }
+                    else
+                    {
+                        //Return Error Message
+                        var http_return = new { Code = "ERR-100", Message = "You must start a conversation first." };
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, http_return);
+                    }
                 }
                 else
                 {
-                    //Return Error Message
-                    var http_return = new { Code = "ERR-100", Message = "You must start a conversation first."};
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, http_return);
+                    //Handle what happens if that isn't the case
+                    throw new Exception("The authorization username or password are not correct.");
                 }
             }
             catch (System.UriFormatException ex)
@@ -57,11 +75,7 @@ namespace OlosBotApp.Controllers
         //Create and send a message to user
         public static async Task Resume(Message OlosMessage2)
         {
-            //Create ChannelsAccounts
-            //var botAccount = new ChannelAccount(OlosMessage2.botId, OlosMessage2.botName);
-            //var userAccount = new ChannelAccount(OlosMessage2.userId, OlosMessage2.userName);
             //Create Connector
-
             var connector = new ConnectorClient(new Uri(OlosMessage2.ServiceUrl));
 
             IMessageActivity message = Activity.CreateMessageActivity();
@@ -76,15 +90,6 @@ namespace OlosBotApp.Controllers
             }
 
             await connector.Conversations.SendToConversationAsync((Activity)OlosMessage2.ConvertToActivity());
-
-
-            //Setup a message
-            //message.From = botAccount;
-            //message.Recipient = userAccount;
-            //message.Conversation = new ConversationAccount(id: OlosMessage2.conversationId);
-            //message.Text = OlosMessage2.text;
-            //message.Locale = "pt-BR";
-            //await connector.Conversations.SendToConversationAsync((Activity)message);
         }
 
     }

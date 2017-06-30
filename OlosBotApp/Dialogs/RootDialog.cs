@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
-using OlosBotApp.Models;
 using System.Configuration;
 using System.Text.RegularExpressions;
 using System.Net;
@@ -10,8 +9,6 @@ using Newtonsoft.Json;
 using Microsoft.Bot.Builder.ConnectorEx;
 using OlosBotApp.Utils;
 using Olos.BotProtocol;
-//using System.Web;
-//using System.Security.Claims;
 
 
 namespace OlosBotApp.Dialogs
@@ -44,8 +41,6 @@ namespace OlosBotApp.Dialogs
             //We need to keep this data so we know who to send the message to. Assume this would be stored somewhere, e.g. an Azure Table
             //OlosActivityModel.userId = activity.Recipient.Id;
 
-            //connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-
             try
             {
                 //Get a PartitionKey
@@ -65,20 +60,16 @@ namespace OlosBotApp.Dialogs
 
                 string pattern = "(http_code=)([0-9][0-9][0-9])";
                 http_code = (Regex.Match(activity.Text, pattern, RegexOptions.IgnoreCase)).Value;
-                string uri = retrievedAppEntity.OlosEngineUri + "&message=" + activity.Text + "&conversationreference=" + str_conversationReference + "&" + http_code;
-                Task<string> getStringTask = OlosFunctions.AccessTheWebAsync(uri);
-                string responseFromServer = await getStringTask;
-
-                // return our reply to the user
-                //int length = (activity.Text ?? string.Empty).Length;
-                //await context.PostAsync($"Você enviou {activity.Text} [{length}] caracteres");
+                //string uri = retrievedAppEntity.OlosEngineUri + "&message=" + activity.Text + "&conversationreference=" + str_conversationReference + "&" + http_code;
+                //Task<string> getStringTask = OlosFunctions.AccessTheWebAsync(uri);
+                //string responseFromServer = await getStringTask;
+                string responseFromServer = OlosFunctions.PostJson(retrievedAppEntity.OlosEngineUri, str_conversationReference);
 
 
                 //string x = Microsoft.Bot.Connector.ClaimsIdentityEx.GetAppIdFromClaims((ClaimsIdentity)HttpContext.Current.User.Identity);
                 //x = Microsoft.Bot.Connector.ClaimsIdentityEx.GetAppPasswordFromClaims((ClaimsIdentity)HttpContext.Current.User.Identity);
 
-
-                await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n ConversationReference:{str_conversationReference} \n\n {responseFromServer} ");
+                await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n ConversationReference:{str_conversationReference} \n\n\n\n ================  \n\n\n\n {responseFromServer} ");
                 context.Wait(MessageReceivedAsync);
             }
             catch (WebException wex)
@@ -87,14 +78,7 @@ namespace OlosBotApp.Dialogs
                 context.Wait(MessageReceivedAsync);
             }
 
-
             /*
-            // calculate something for us to return
-            int length = (activity.Text ?? string.Empty).Length;
-
-            // return our reply to the user
-            await context.PostAsync($"Você enviou {activity.Text} [{length}] caracteres");
-
             context.Wait(MessageReceivedAsync);
             */
         }
