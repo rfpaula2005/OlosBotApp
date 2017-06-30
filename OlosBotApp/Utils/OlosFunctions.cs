@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Text;
+using System.Threading.Tasks;
+using System.Net.Http;
+
+
+namespace OlosBotApp.Utils
+{
+    public class OlosFunctions
+    {
+        //Get the Http credentials from basic authentication
+        public static KeyValuePair<string, string>[] getHttpCredentials(HttpContext httpContext)
+        {
+            string username;
+            string password;
+            string authHeader = httpContext.Request.Headers["Authorization"];
+            KeyValuePair<string, string>[] retorno;
+
+            if (authHeader != null && authHeader.StartsWith("Basic"))
+            {
+                //Extract credentials
+                string encodedUsernamePassword = authHeader.Substring("Basic ".Length).Trim();
+                //the coding should be iso or you could use ASCII and UTF-8 decoder
+                Encoding encoding = Encoding.GetEncoding("iso-8859-1");
+                string usernamePassword = encoding.GetString(Convert.FromBase64String(encodedUsernamePassword));
+
+                int seperatorIndex = usernamePassword.IndexOf(':');
+
+                username = usernamePassword.Substring(0, seperatorIndex);
+                password = usernamePassword.Substring(seperatorIndex + 1);
+
+                retorno = new[] {new KeyValuePair<string,string>("username",username),new KeyValuePair<string,string>("password",password)};
+            }
+            else
+            {
+                //Handle what happens if that isn't the case
+                throw new Exception("The authorization header is either empty or isn't Basic.");
+            }
+            return retorno;
+        }
+
+        // Get the contents of a uri
+        public static async Task<string> AccessTheWebAsync(string uri)
+        {
+            HttpClient client = new HttpClient();
+
+            Task<string> getStringTask = client.GetStringAsync(uri);
+            string urlContents = await getStringTask;
+
+            return urlContents;
+        }
+    }
+}
