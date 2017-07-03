@@ -6,6 +6,7 @@ using System.Configuration;
 
 namespace OlosBotApp.Utils
 {
+    //Allow the reuse of Entity on the RootDialog class
     [Serializable]
     public class AppEntity
     {
@@ -33,6 +34,7 @@ namespace OlosBotApp.Utils
     }
 
 
+    //Used to get data form TableEntity
     public class TElementAppEntity : TableEntity
     {
         public string AppPassword { get; set; }
@@ -72,17 +74,23 @@ namespace OlosBotApp.Utils
     public class AzureCloudStorageTable
     {
 
-        public static CloudTable createCloudTable(string strCloudTableName)
+        public static CloudTable getCloudTable(string strCloudTableName)
         {
             // Set storage Account
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
-            // Set storage Table PartionKey
-            string PartitionKey = (ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] != null) ? ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] : "BotCredential";
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
             // Get a reference to a table named "OlosBotCredentials"
             CloudTable table = tableClient.GetTableReference(strCloudTableName);
+
+            return table;
+        }
+
+        public static CloudTable createCloudTable(string strCloudTableName)
+        {
+            // Get a reference to a strCloudTableName table
+            CloudTable table = getCloudTable(strCloudTableName);
 
             // Create the table if it doesn't exist.
             table.CreateIfNotExists();
@@ -90,30 +98,12 @@ namespace OlosBotApp.Utils
             return table;
         }
 
-        public static CloudTable getCloudTable(string strCloudTableName)
-        {
-            // Set storage Account
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
-            // Set storage Table PartionKey
-            string PartitionKey = (ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] != null) ? ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] : "BotCredential";
-
-            // Create the table client.
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-            // Get a reference to a table named "OlosBotCredentials"
-            CloudTable table = tableClient.GetTableReference(strCloudTableName);
-
-            return table;
-        }
 
         public static TableResult getAppEntity(string strCloudTableName, string PartitionKey, string RowKey)
         {
-            // Set storage Account
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
+            // Get a reference to a strCloudTableName table
+            CloudTable table = getCloudTable(strCloudTableName);
 
-            // Create the table client.
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-            // Get a reference to a table named "OlosBotCredentials"
-            CloudTable table = tableClient.GetTableReference(strCloudTableName);
             // Create a retrieve operation that takes a customer entity.
             TableOperation retrieveOperation = TableOperation.Retrieve<TElementAppEntity>(PartitionKey, RowKey);
             // Execute the retrieve operation.
@@ -124,13 +114,9 @@ namespace OlosBotApp.Utils
 
         public static AppEntity getAppEntityData(string strCloudTableName, string PartitionKey, string RowKey)
         {
-            // Set storage Account
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
+            // Get a reference to a strCloudTableName table
+            CloudTable table = getCloudTable(strCloudTableName);
 
-            // Create the table client.
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-            // Get a reference to a table named "OlosBotCredentials"
-            CloudTable table = tableClient.GetTableReference(strCloudTableName);
             // Create a retrieve operation that takes a customer entity.
             TableOperation retrieveOperation = TableOperation.Retrieve<TElementAppEntity>(PartitionKey, RowKey);
             // Execute the retrieve operation.
@@ -145,13 +131,8 @@ namespace OlosBotApp.Utils
 
         public static void insAppEntity(string strCloudTableName, string PartitionKey, string RowKey, string appPasword, string botId, string OlosEngineUri)
         {
-            // Set storage Account
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
-
-            // Create the table client.
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-            // Get a reference to a table named "OlosBotCredentials"
-            CloudTable table = tableClient.GetTableReference(strCloudTableName);
+            // Get a reference to a strCloudTableName table
+            CloudTable table = getCloudTable(strCloudTableName);
 
             // Create a new customer entity.
             TElementAppEntity appBot = new TElementAppEntity(PartitionKey, RowKey, appPasword);
