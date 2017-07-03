@@ -1,12 +1,16 @@
-﻿using Microsoft.WindowsAzure.Storage;
+﻿using System;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Configuration;
 
+
 namespace OlosBotApp.Utils
 {
-
-    public class AppEntity : TableEntity
+    [Serializable]
+    public class AppEntity
     {
+        public string PartitionKey { get; set; }
+        public string RowKey { get; set; }
         public string AppPassword { get; set; }
         public string BotId { get; set; }
         public string OlosEngineUri { get; set; }
@@ -27,6 +31,43 @@ namespace OlosBotApp.Utils
 
         public AppEntity() { }
     }
+
+
+    public class TElementAppEntity : TableEntity
+    {
+        public string AppPassword { get; set; }
+        public string BotId { get; set; }
+        public string OlosEngineUri { get; set; }
+
+        public TElementAppEntity(string AppId, string AppPassword)
+        {
+            this.PartitionKey = "BotCredential";
+            this.RowKey = AppId;
+            this.AppPassword = AppPassword;
+        }
+
+        public TElementAppEntity(string PartitionKey, string AppId, string AppPassword)
+        {
+            this.PartitionKey = PartitionKey;
+            this.RowKey = AppId;
+            this.AppPassword = AppPassword;
+        }
+
+        public TElementAppEntity() { }
+
+        public AppEntity ConvertToAppEntity()
+        {
+            AppEntity ObjAppEntity = new AppEntity();
+            ObjAppEntity.PartitionKey = this.PartitionKey;
+            ObjAppEntity.RowKey = this.RowKey;
+            ObjAppEntity.AppPassword = this.AppPassword;
+            ObjAppEntity.BotId = this.BotId;
+            ObjAppEntity.OlosEngineUri = this.OlosEngineUri;
+
+            return ObjAppEntity;
+        }
+    }
+
 
     public class AzureCloudStorageTable
     {
@@ -74,7 +115,7 @@ namespace OlosBotApp.Utils
             // Get a reference to a table named "OlosBotCredentials"
             CloudTable table = tableClient.GetTableReference(strCloudTableName);
             // Create a retrieve operation that takes a customer entity.
-            TableOperation retrieveOperation = TableOperation.Retrieve<AppEntity>(PartitionKey, RowKey);
+            TableOperation retrieveOperation = TableOperation.Retrieve<TElementAppEntity>(PartitionKey, RowKey);
             // Execute the retrieve operation.
             TableResult retrievedResult = table.Execute(retrieveOperation);
 
@@ -91,11 +132,11 @@ namespace OlosBotApp.Utils
             // Get a reference to a table named "OlosBotCredentials"
             CloudTable table = tableClient.GetTableReference(strCloudTableName);
             // Create a retrieve operation that takes a customer entity.
-            TableOperation retrieveOperation = TableOperation.Retrieve<AppEntity>(PartitionKey, RowKey);
+            TableOperation retrieveOperation = TableOperation.Retrieve<TElementAppEntity>(PartitionKey, RowKey);
             // Execute the retrieve operation.
             TableResult retrievedResult = table.Execute(retrieveOperation);
             // Convert to AppEntity 
-            AppEntity retrievedAppEntity = (AppEntity)retrievedResult.Result;
+            AppEntity retrievedAppEntity = ((TElementAppEntity)retrievedResult.Result).ConvertToAppEntity();
 
             return retrievedAppEntity;
         }
@@ -113,7 +154,7 @@ namespace OlosBotApp.Utils
             CloudTable table = tableClient.GetTableReference(strCloudTableName);
 
             // Create a new customer entity.
-            AppEntity appBot = new AppEntity(PartitionKey, RowKey, appPasword);
+            TElementAppEntity appBot = new TElementAppEntity(PartitionKey, RowKey, appPasword);
             appBot.BotId = botId;
             appBot.OlosEngineUri = OlosEngineUri;
 
