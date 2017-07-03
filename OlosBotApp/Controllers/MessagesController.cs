@@ -60,7 +60,7 @@ namespace OlosBotApp
                         {
                             if (newMember.Id != activity.Recipient.Id)
                             {
-                                reply.Text = $"Bem vindo {newMember.Name}!";
+                                reply.Text = $"Bem-vindo {newMember.Name}!";
                                 await client.Conversations.ReplyToActivityAsync(reply);
                             }
                         }
