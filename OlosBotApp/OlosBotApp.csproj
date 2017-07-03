@@ -12,7 +12,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OlosBotApp</RootNamespace>
-    <AssemblyName>Bot Application</AssemblyName>
+    <AssemblyName>Olos.BotApp</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -138,6 +138,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\AzureCloudStorageTable.cs" />
+    <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\OlosFunctions.cs" />
     <Compile Include="Utils\MultiCredentialProvider.cs" />
   </ItemGroup>

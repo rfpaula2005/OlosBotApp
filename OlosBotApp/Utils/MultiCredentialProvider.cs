@@ -15,6 +15,8 @@ namespace OlosBotApp.Utils
         protected bool AuthenticationEnabled = true;
         //Get a PartitionKey
         protected string PartitionKey = (ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] != null) ? ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] : "BotCredential";
+        //Get a UseLocalCredentials
+        protected bool UseLocalCredentials = ((ConfigurationManager.AppSettings["UseLocalCredentials"] != null) ? ConfigurationManager.AppSettings["UseLocalCredentials"] : "false") == "false" ? false : true;
         //Get the AppEntity related to the current AppId
         protected AppEntity ObjAppEntity;
 
@@ -27,13 +29,20 @@ namespace OlosBotApp.Utils
             //AppEntity retrievedAppEntity = Utils.AzureCloudStorageTable.getAppEntityData("OlosBotCredentials", PartitionKey, appId);
             //return Task.FromResult(retrievedAppEntity.RowKey.Equals(appId));
 
-            //Check if ObjAppEntity have already created
-            if (ObjAppEntity == null)
+            if (!UseLocalCredentials)
             {
-                //Check appId on AzureTable OlosBotCredentials and return the data
-                ObjAppEntity = Utils.AzureCloudStorageTable.getAppEntityData("OlosBotCredentials", PartitionKey, appId);
+                //Check if ObjAppEntity have already created
+                if (ObjAppEntity == null)
+                {
+                    //Check appId on AzureTable OlosBotCredentials and return the data
+                    ObjAppEntity = Utils.AzureCloudStorageTable.getAppEntityData("OlosBotCredentials", PartitionKey, appId);
+                }
+                return Task.FromResult(ObjAppEntity.RowKey.Equals(appId));
+            } else
+            {
+                return Task.FromResult(ConfigurationManager.AppSettings["MicrosoftAppId"].Equals(appId));
             }
-            return Task.FromResult(ObjAppEntity.RowKey.Equals(appId));
+
         }
 
         public Task<string> GetAppPasswordAsync(string appId)
@@ -45,13 +54,19 @@ namespace OlosBotApp.Utils
             //AppEntity retrievedAppEntity = Utils.AzureCloudStorageTable.getAppEntityData("OlosBotCredentials", PartitionKey, appId);
             //return Task.FromResult(retrievedAppEntity.RowKey.Equals(appId) ? retrievedAppEntity.AppPassword : null);
 
-            //Check if ObjAppEntity have already created
-            if (ObjAppEntity == null)
+            if (!UseLocalCredentials)
             {
-                //Check appId on AzureTable OlosBotCredentials and return the data
-                ObjAppEntity = Utils.AzureCloudStorageTable.getAppEntityData("OlosBotCredentials", PartitionKey, appId);
+                //Check if ObjAppEntity have already created
+                if (ObjAppEntity == null)
+                {
+                    //Check appId on AzureTable OlosBotCredentials and return the data
+                    ObjAppEntity = Utils.AzureCloudStorageTable.getAppEntityData("OlosBotCredentials", PartitionKey, appId);
+                }
+                return Task.FromResult(ObjAppEntity.RowKey.Equals(appId) ? ObjAppEntity.AppPassword : null);
+            } else
+            {
+                return Task.FromResult(ConfigurationManager.AppSettings["MicrosoftAppId"].Equals(appId) ? ConfigurationManager.AppSettings["MicrosoftAppPassword"] : null);
             }
-            return Task.FromResult(ObjAppEntity.RowKey.Equals(appId) ? ObjAppEntity.AppPassword : null);
         }
 
         public Task<bool> IsAuthenticationDisabledAsync()
