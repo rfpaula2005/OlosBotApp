@@ -58,10 +58,10 @@ namespace OlosBotApp.Dialogs
                 ObjMessage.GatewayUrl = GatewayUrl;
                 messageJson = ObjMessage.GetJsonN();
 
-                await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n ConversationReference:{messageJson} \n\n\n\n ");
+                //await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n ConversationReference:{messageJson} \n\n\n\n ");
+                await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n Repassando {ObjAppEntity.OlosEngineUri} \n\n\n\n {messageJson}");
                 string responseFromServer = OlosFunctions.PostJson(ObjAppEntity.OlosEngineUri, messageJson);
-
-                await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n ConversationReference:{messageJson} \n\n\n\n ================  \n\n\n\n {responseFromServer} ");
+                await context.PostAsync(responseFromServer);
                 //await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n ConversationReference:{messageJson} \n\n\n\n ");
                 context.Wait(MessageReceivedAsync);
             }

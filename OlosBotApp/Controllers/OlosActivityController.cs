@@ -76,7 +76,8 @@ namespace OlosBotApp.Controllers
         public static async Task Resume(Message OlosMessage2)
         {
             //Create Connector
-            var connector = new ConnectorClient(new Uri(OlosMessage2.ServiceUrl));
+            //var connector = new ConnectorClient(new Uri(OlosMessage2.ServiceUrl));
+            var connector = new ConnectorClient(new Uri(OlosMessage2.ServiceUrl), OlosMessage2.AppId);
 
             IMessageActivity message = Activity.CreateMessageActivity();
 
