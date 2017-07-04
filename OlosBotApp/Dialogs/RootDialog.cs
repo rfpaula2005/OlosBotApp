@@ -67,7 +67,7 @@ namespace OlosBotApp.Dialogs
             }
             catch (WebException wex)
             {
-                await context.PostAsync($"Por favor me desculpe, no momento estamos passando por algumas dificuldades técnicas.Retorne mais tarde e teremos o maior prazer em ajudá-lo com a sua solicitação.\n\n Execption:\n\n\n\n" + ObjAppEntity.OlosEngineUri + "\n\n\n\n" + wex.Message);
+                await context.PostAsync($"Por favor me desculpe, no momento estamos passando por algumas dificuldades técnicas. Retorne mais tarde e teremos o maior prazer em ajudá-lo com a sua solicitação.\n\n Execption:\n\n\n\n" + ObjAppEntity.OlosEngineUri + "\n\n\n\n" + wex.Message);
                 context.Wait(MessageReceivedAsync);
             }
 
