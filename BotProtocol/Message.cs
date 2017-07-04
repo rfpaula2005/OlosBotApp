@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Connector;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
@@ -41,6 +42,13 @@ namespace Olos.BotProtocol
         public string GetJson()
         {
             string json = new JavaScriptSerializer().Serialize(this);
+
+            return json;
+        }
+
+        public string GetJsonN()
+        {
+            string json = JsonConvert.SerializeObject(this);
             return json;
         }
 
@@ -51,20 +59,25 @@ namespace Olos.BotProtocol
             return Obj;
         }
 
+        public static Message SetJsonN(string json)
+        {
+            Message Obj = JsonConvert.DeserializeObject<Message>(json);
+            return Obj;
+        }
         public Activity ConvertToActivity()
         {
             Activity activity = new Activity();
             activity.Type = "message";
             activity.ReplyToId = this.ReplayToId;
             activity.ChannelId = this.ChannelId;
-            activity.Conversation = new ConversationAccount(null, this.ConversationId, null);        
-            activity.Locale = this.Locale;           
-            activity.ServiceUrl = this.ServiceUrl;           
+            activity.Conversation = new ConversationAccount(null, this.ConversationId, null);
+            activity.Locale = this.Locale;
+            activity.ServiceUrl = this.ServiceUrl;
             activity.Text = this.Text;
             activity.TextFormat = this.TextFormat;
             activity.From = this.From.ConvertToChannelAccount();
             activity.Recipient = this.To.ConvertToChannelAccount();
-            if(this.SugestAction != null)
+            if (this.SugestAction != null)
             {
                 activity.SuggestedActions = BotProtocol.SuggestionAction.ConvertToSuggestedActions(this.SugestAction);
             }
@@ -81,16 +94,16 @@ namespace Olos.BotProtocol
 
         public static Message ConvertToMessage(Activity activity)
         {
-            Message Obj = new Message();        
-            
+            Message Obj = new Message();
+
             Obj.AppId = "";
             Obj.ReplayToId = activity.ReplyToId;
             Obj.ChannelId = activity.ChannelId;
-            Obj.ConversationId = activity.Conversation.Id;           
+            Obj.ConversationId = activity.Conversation.Id;
             Obj.GatewayUrl = "";
             Obj.Locale = activity.Locale;
             Obj.MessageType = activity.Type;
-            Obj.ServiceUrl = activity.ServiceUrl;            
+            Obj.ServiceUrl = activity.ServiceUrl;
             Obj.Text = activity.Text;
             Obj.TextFormat = activity.TextFormat;
             Obj.Timestamp = activity.Timestamp.ToString();
