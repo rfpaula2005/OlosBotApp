@@ -76,7 +76,7 @@ namespace OlosBotApp.Controllers
             }
             catch (Exception ex)
             {
-                Utils.Log.Error("[OlosActivityController::OlosSendMessage] Error", ex.Message);
+                Utils.Log.Error("[OlosActivityController::OlosSendMessage] Error.", ex.Message);
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
             }
         }
