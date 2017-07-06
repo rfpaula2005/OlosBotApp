@@ -28,7 +28,6 @@ namespace OlosBotApp.Dialogs
         public Task StartAsync(IDialogContext context)
         {
             context.Wait(MessageReceivedAsync);
-
             return Task.CompletedTask;
         }
 
@@ -58,22 +57,48 @@ namespace OlosBotApp.Dialogs
                 ObjMessage.GatewayUrl = GatewayUrl;
                 messageJson = ObjMessage.GetJsonN();
 
-                //await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n ConversationReference:{messageJson} \n\n\n\n ");
+                //it will be removed and replaced by a log
                 await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n Repassando {ObjAppEntity.OlosEngineUri} \n\n\n\n {messageJson}");
-                string responseFromServer = OlosFunctions.PostJson(ObjAppEntity.OlosEngineUri, messageJson);
-                await context.PostAsync(responseFromServer);
-                //await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n ConversationReference:{messageJson} \n\n\n\n ");
-                context.Wait(MessageReceivedAsync);
+                try
+                {
+                    string content;
+                    WebResponse responseFromServer = OlosFunctions.PostJson(ObjAppEntity.OlosEngineUri, messageJson);
+                    
+                    switch (((System.Net.HttpWebResponse)responseFromServer).StatusCode)
+                    {
+                        case HttpStatusCode.Accepted:
+                            content = OlosFunctions.GetResponseStrContent(responseFromServer);
+                            //Log
+                            await context.PostAsync(HttpStatusCode.Accepted + "->" + content);
+                            //context.Wait(MessageReceivedAsync);
+                            break;
+                        case HttpStatusCode.OK:
+                            content = OlosFunctions.GetResponseStrContent(responseFromServer);
+                            //Return to user
+                            await context.PostAsync(HttpStatusCode.OK + "->" + content);
+                            //context.Wait(MessageReceivedAsync);
+                            break;
+                        default:
+                            //LogErros
+                            break;
+                    }
+                }
+                catch (WebException wex)
+                {
+                    await context.PostAsync($"Por favor me desculpe, no momento estamos passando por algumas dificuldades técnicas. Retorne mais tarde e teremos o maior prazer em ajudá-lo com a sua solicitação.\n\n Execption:\n\n\n\n" + ObjAppEntity.OlosEngineUri + "\n\n\n\n" + wex.Message);
+                    //context.Wait(MessageReceivedAsync);
+                }
             }
-            catch (WebException wex)
+            catch (Exception ex)
             {
-                await context.PostAsync($"Por favor me desculpe, no momento estamos passando por algumas dificuldades técnicas. Retorne mais tarde e teremos o maior prazer em ajudá-lo com a sua solicitação.\n\n Execption:\n\n\n\n" + ObjAppEntity.OlosEngineUri + "\n\n\n\n" + wex.Message);
+                await context.PostAsync($"Por favor me desculpe, no momento estamos passando por algumas dificuldades técnicas. Retorne mais tarde e teremos o maior prazer em ajudá-lo com a sua solicitação.\n\n Execption:\n\n\n\n" + ObjAppEntity.OlosEngineUri + "\n\n\n\n" + ex.Message);
+                //context.Wait(MessageReceivedAsync);
+            }
+            finally
+            {
                 context.Wait(MessageReceivedAsync);
             }
 
-            /*
-            context.Wait(MessageReceivedAsync);
-            */
         }
     }
 }

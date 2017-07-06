@@ -55,7 +55,7 @@ namespace OlosBotApp.Utils
             return urlContents;
         }
 
-        public static string PostJson(string url, string json)
+        public static WebResponse PostJson(string url, string json)
         {
             HttpWebRequest http = (HttpWebRequest)WebRequest.Create(new Uri(url));
             http.Accept = "application/json";
@@ -70,27 +70,17 @@ namespace OlosBotApp.Utils
             newStream.Write(bytes, 0, bytes.Length);
             newStream.Close();
 
-            var response = http.GetResponse();
+            WebResponse response = http.GetResponse();
 
+            return response;
+        }
+
+        public static string GetResponseStrContent(WebResponse response)
+        {
             var stream = response.GetResponseStream();
             var sr = new StreamReader(stream);
-            string  content = sr.ReadToEnd();
-
+            string content = sr.ReadToEnd();
             return content;
-
-            /*
-            string result = "";
-            Uri str_url = new Uri(url);
-
-            using (var client = new WebClient())
-            {
-                client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                client.UploadStringAsync(str_url, "POST", json);
-                //result = client.UploadStringAsync(str_url, "POST", json);
-            }
-            
-            return result;
-            */
         }
 
         // Verify Basic Authentication
