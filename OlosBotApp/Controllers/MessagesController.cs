@@ -41,12 +41,15 @@ namespace OlosBotApp
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
+            Utils.Log.Info("================== MessagesController::Post ================== ");
             if (activity.Type == ActivityTypes.Message)
             {
+                Utils.Log.Info("[MessagesController::Post] Activity Message Received");
                 await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
             }
             else if (activity.Type == ActivityTypes.ConversationUpdate)
             {
+                Utils.Log.Info("[MessagesController::Post] Activity ConversationUpdate Received");
                 IConversationUpdateActivity update = activity;
                 // resolve the connector client from the container to make sure that it is 
                 // instantiated with the right MicrosoftAppCredentials
@@ -69,6 +72,7 @@ namespace OlosBotApp
             }
             else
             {
+                Utils.Log.Info("[MessagesController::Post] HandleSystemMessage Called");
                 HandleSystemMessage(activity);
             }
             var response = Request.CreateResponse(HttpStatusCode.OK);
@@ -77,6 +81,7 @@ namespace OlosBotApp
 
         private Activity HandleSystemMessage(Activity message)
         {
+            Utils.Log.Info("================== MessagesController::HandleSystemMessage ================== ");
             if (message.Type == ActivityTypes.DeleteUserData)
             {
                 // Implement user deletion here

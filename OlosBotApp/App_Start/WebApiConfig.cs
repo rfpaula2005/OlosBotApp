@@ -9,6 +9,9 @@ namespace OlosBotApp
 {
     public static class WebApiConfig
     {
+        //private static readonly OlosBotApp.Utils.LogMessage log = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+        private static readonly Type log = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+
         public static void Register(HttpConfiguration config)
         {
             // Json settings

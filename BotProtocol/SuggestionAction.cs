@@ -27,6 +27,7 @@ namespace Olos.BotProtocol
 
         }
 
+
         public static SuggestedActions ConvertToSuggestedActions(List<SuggestionAction> Lista)
         {
             SuggestedActions SA = new SuggestedActions();
@@ -35,7 +36,10 @@ namespace Olos.BotProtocol
 
             foreach (SuggestionAction item in Lista)
             {
-                CardAction CA = new CardAction(ActionTypes.ImBack, item.Title, item.Image, null, item.Value, null);
+                CardAction CA = new CardAction();
+                CA.Type = ActionTypes.ImBack;
+                CA.Title = item.Title;
+                CA.Value = item.Value;
                 Actions.Add(CA);
             }
 

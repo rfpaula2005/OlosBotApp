@@ -22,51 +22,61 @@ namespace OlosBotApp.Controllers
         //public async Task<HttpResponseMessage> OlosSendMessage(OlosActivityModel Mensagem)
         public async Task<HttpResponseMessage> OlosSendMessage(Message OlosMessage)
         {
-            httpContext = HttpContext.Current;
+            Utils.Log.Info("================== OlosActivityController::OlosSendMessage ================== ");
+            Utils.Log.Warn("[OlosActivityController::OlosSendMessage] Message Received ", OlosMessage);
 
+            httpContext = HttpContext.Current;
             try
             {
                 KeyValuePair<string, string>[] v_Cretentials = OlosFunctions.getHttpCredentials(httpContext);
+
+                Utils.Log.Info("[OlosActivityController::OlosSendMessage] Verifying credentials");
 
                 //Verify Credentials
                 if (OlosFunctions.verifyCredentials(v_Cretentials))
                 {
                     if (!string.IsNullOrEmpty(OlosMessage.ConversationId))
                     {
-
-                        await Resume(OlosMessage); //We don't need to wait for this, just want to start the interruption here
+                        Utils.Log.Info("[OlosActivityController::OlosSendMessage] Resume Called - Send message to bot");
+                        await Resume(OlosMessage);
 
                         //Return Success Message
                         var http_return = new { Code = "SUC-001", Message = "OK" };
+                        Utils.Log.Warn("[OlosActivityController::OlosSendMessage] Return success to caller", http_return);
                         return Request.CreateResponse(HttpStatusCode.OK, http_return);
                     }
                     else
                     {
                         //Return Error Message
                         var http_return = new { Code = "ERR-100", Message = "You must start a conversation first." };
+                        Utils.Log.Warn("[OlosActivityController::OlosSendMessage] Return errror to caller", http_return);
                         return Request.CreateResponse(HttpStatusCode.BadRequest, http_return);
                     }
                 }
                 else
                 {
                     //Handle what happens if that isn't the case
-                    throw new Exception("The authorization username or password are not correct.");
+                    Utils.Log.Error("[OlosActivityController::OlosSendMessage] Username or pssword incorrect", v_Cretentials);
+                    throw new Exception("The authorization username or password incorrect.");
                 }
             }
             catch (System.UriFormatException ex)
             {
                 //Return Error Message
                 var http_return = new { Code = "ERR-101", Message = "Connector can´t be created. Check the serviceUrl.", Detail = ex.Message};
+                Utils.Log.Error("[OlosActivityController::OlosSendMessage] Connector can´t be created. Check the serviceUrl.", ex.Message);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, http_return);
             }
             catch (Microsoft.Rest.HttpOperationException ex)
             {
                 //Return Error Message
                 var http_return = new { Code = "ERR-102", Message = "Conversation not found. Check the conversationId.", Detail = ex.Message };
+                Utils.Log.Error("[OlosActivityController::OlosSendMessage] Conversation not found. Check the conversationId.", ex.Message);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, http_return);
             }
             catch (Exception ex)
             {
+                Utils.Log.Error("[OlosActivityController::OlosSendMessage] Error", ex.Message);
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
             }
         }
@@ -75,21 +85,28 @@ namespace OlosBotApp.Controllers
         //Create and send a message to user
         public static async Task Resume(Message OlosMessage2)
         {
+            
+            Utils.Log.Info("================== OlosActivityController::Resume ================== ");
+            Utils.Log.Info("[OlosActivityController::Resume] Creating connector.");
             //Create Connector
-            //var connector = new ConnectorClient(new Uri(OlosMessage2.ServiceUrl));
             var connector = new ConnectorClient(new Uri(OlosMessage2.ServiceUrl), OlosMessage2.AppId);
 
+            Utils.Log.Info("[OlosActivityController::Resume] Creating activity.");
             IMessageActivity message = Activity.CreateMessageActivity();
+            Utils.Log.Info("[OlosActivityController::Resume] Activity created.");
 
             if (!string.IsNullOrEmpty(OlosMessage2.ConversationId) && !string.IsNullOrEmpty(OlosMessage2.ChannelId))
             {
+                Utils.Log.Info("[OlosActivityController::Resume] Activity validated.");
                 message.ChannelId = OlosMessage2.ChannelId;
             }
             else
             {
+                Utils.Log.Info("[OlosActivityController::Resume] Activity rebuilt.");
                 OlosMessage2.ConversationId = (await connector.Conversations.CreateDirectConversationAsync(OlosMessage2.From.ConvertToChannelAccount(), OlosMessage2.To.ConvertToChannelAccount())).Id;
             }
 
+            Utils.Log.Warn("[OlosActivityController::Resume] Sending message to user", (Activity)OlosMessage2.ConvertToActivity());
             await connector.Conversations.SendToConversationAsync((Activity)OlosMessage2.ConvertToActivity());
         }
 
