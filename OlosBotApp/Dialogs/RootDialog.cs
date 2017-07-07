@@ -18,6 +18,8 @@ namespace OlosBotApp.Dialogs
         //Get a PartitionKey
         protected string PartitionKey = (ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] != null) ? ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] : "BotCredential";
         protected string GatewayUrl = (ConfigurationManager.AppSettings["GatewayUrl"] != null) ? ConfigurationManager.AppSettings["GatewayUrl"] : "";
+        protected string OlosEngineUri = (ConfigurationManager.AppSettings["OlosEngineUri"] != null) ? ConfigurationManager.AppSettings["OlosEngineUri"] : "";
+        protected bool UseLocalCredentials = ((ConfigurationManager.AppSettings["UseLocalCredentials"] != null) ? ConfigurationManager.AppSettings["UseLocalCredentials"] : "false") == "false" ? false : true;
 
         //Get the AppEntity related to the current AppId
         protected AppEntity ObjAppEntity;
@@ -44,7 +46,6 @@ namespace OlosBotApp.Dialogs
                 Utils.Log.Info("[RootDialog::MessageReceivedAsync] MessageReceivedAsync Initiated");
 
                 var lc_appId = ((ClaimsIdentity)HttpContext.Current.User.Identity).GetCredentialsFromClaims().MicrosoftAppId;
-                //var lc_appId = Microsoft.Bot.Connector.ClaimsIdentityEx.GetAppIdFromClaims((ClaimsIdentity)HttpContext.Current.User.Identity);
 
                 //Check if ObjAppEntity have already created
                 if (ObjAppEntity == null)
@@ -63,14 +64,18 @@ namespace OlosBotApp.Dialogs
 
                 Utils.Log.Info("[RootDialog::MessageReceivedAsync] Activity converted");
                 Utils.Log.Warn("[RootDialog::MessageReceivedAsync] Olos Message \n\n", ObjMessage);
+
                 //it will be removed and replaced by a log
                 //await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n Repassando {ObjAppEntity.OlosEngineUri} \n\n\n\n {messageJson}");
                 try
                 {
-                    Utils.Log.Info("[RootDialog::MessageReceivedAsync] Conecting to Olos Bot Receiver " + ObjAppEntity.OlosEngineUri);
+                    string v_OlosEngineUri = (UseLocalCredentials) ? OlosEngineUri : ObjAppEntity.OlosEngineUri;
+
+                    //Utils.Log.Info("[RootDialog::MessageReceivedAsync] Conecting to Olos Bot Receiver " + ObjAppEntity.OlosEngineUri);
+                    Utils.Log.Info("[RootDialog::MessageReceivedAsync] Conecting to Olos Bot Receiver " + v_OlosEngineUri);
 
                     string content;
-                    WebResponse responseFromServer = OlosFunctions.PostJson(ObjAppEntity.OlosEngineUri, messageJson);
+                    WebResponse responseFromServer = OlosFunctions.PostJson(v_OlosEngineUri, messageJson);
 
                     Utils.Log.Info("[RootDialog::MessageReceivedAsync] Olos Bot Receiver response", ((System.Net.HttpWebResponse)responseFromServer).StatusCode);
                     switch (((System.Net.HttpWebResponse)responseFromServer).StatusCode)
