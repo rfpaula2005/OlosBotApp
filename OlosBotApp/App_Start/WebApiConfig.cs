@@ -9,9 +9,6 @@ namespace OlosBotApp
 {
     public static class WebApiConfig
     {
-        //private static readonly OlosBotApp.Utils.LogMessage log = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
-        private static readonly Type log = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
-
         public static void Register(HttpConfiguration config)
         {
             // Json settings
@@ -26,6 +23,8 @@ namespace OlosBotApp
             };
 
             // Web API configuration and services
+            //Initialize logLevel
+            Utils.Log.level = Utils.Log.StringToDetailLevel(((System.Configuration.ConfigurationManager.AppSettings["LogLevel"] != null) ? System.Configuration.ConfigurationManager.AppSettings["LogLevel"] : "All"));
 
             // Web API routes
             config.MapHttpAttributeRoutes();
