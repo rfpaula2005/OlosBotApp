@@ -33,7 +33,7 @@ namespace OlosBotApp.Dialogs
 
         private async Task MessageReceivedAsync(IDialogContext context, IAwaitable<object> result)
         {
-
+            DateTime dt_inicio = DateTime.Now;
             Utils.Log.Info("================== RootDialog::MessageReceivedAsync ================== ");
 
             //Patern vars
@@ -64,7 +64,6 @@ namespace OlosBotApp.Dialogs
 
                 Utils.Log.Info("[RootDialog::MessageReceivedAsync] Activity converted");
                 Utils.Log.Warn("[RootDialog::MessageReceivedAsync] Olos Message \n\n", ObjMessage);
-
                 try
                 {
                     //Set OlosEngineUri follow de web.config definitions (use local or remote credentials)
@@ -74,7 +73,10 @@ namespace OlosBotApp.Dialogs
                     Utils.Log.Info("[RootDialog::MessageReceivedAsync] Conecting to Olos Bot Receiver " + v_OlosEngineUri);
 
                     string content;
+                    DateTime dt_inicioPostJson = DateTime.Now;
                     WebResponse responseFromServer = OlosFunctions.PostJson(v_OlosEngineUri, messageJson);
+                    DateTime dt_fimPostJson = DateTime.Now;
+                    Utils.Log.Info("[RootDialog::MessageReceivedAsync] PostJson Duration:" + Math.Round(Convert.ToDecimal((dt_fimPostJson - dt_inicioPostJson).TotalMilliseconds)).ToString() + " ms");
 
                     Utils.Log.Info("[RootDialog::MessageReceivedAsync] Olos Bot Receiver response", ((System.Net.HttpWebResponse)responseFromServer).StatusCode);
                     switch (((System.Net.HttpWebResponse)responseFromServer).StatusCode)
@@ -100,12 +102,8 @@ namespace OlosBotApp.Dialogs
                             break;
                     }
 
-                    /*
-                    Utils.Log.Info("[RootDialog::MessageReceivedAsync] Recovering content");
-                    //Return to user
-                    Utils.Log.Info("[RootDialog::MessageReceivedAsync] Sending content do user");
-                    await context.PostAsync(HttpStatusCode.OK + "->" + DateTime.Now + " userId: " + activity.From.Id);
-                    */
+                    DateTime dt_fim = DateTime.Now;
+                    Utils.Log.Info("[RootDialog::MessageReceivedAsync] Duration:" + Math.Round(Convert.ToDecimal((dt_fim - dt_inicio).TotalMilliseconds)).ToString() + " ms");
 
                 }
                 catch (WebException wex)
@@ -125,6 +123,16 @@ namespace OlosBotApp.Dialogs
             {
                 context.Wait(MessageReceivedAsync);
             }
+
+            /*
+            Utils.Log.Info("[RootDialog::MessageReceivedAsync] Recovering content");
+            //Return to user
+            Utils.Log.Info("[RootDialog::MessageReceivedAsync] Sending content do user");
+            DateTime dt_fim = DateTime.Now;
+            await context.PostAsync("[Tempo:" + (dt_fim - dt_inicio).TotalMilliseconds.ToString() + "]" + HttpStatusCode.OK + "->" + DateTime.Now + " userId: " + activity.From.Id);
+            context.Wait(MessageReceivedAsync);
+            */
+
 
         }
     }
