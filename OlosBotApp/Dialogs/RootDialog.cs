@@ -15,7 +15,7 @@ namespace OlosBotApp.Dialogs
     public class RootDialog : IDialog<object>
     {
         protected int count = 1;
-        //Get a PartitionKey
+        //Initialize class properties with web.config values
         protected string PartitionKey = (ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] != null) ? ConfigurationManager.AppSettings["OlosBotStorageOlosBotCredentialsPartitionKey"] : "BotCredential";
         protected string GatewayUrl = (ConfigurationManager.AppSettings["GatewayUrl"] != null) ? ConfigurationManager.AppSettings["GatewayUrl"] : "";
         protected string OlosEngineUri = (ConfigurationManager.AppSettings["OlosEngineUri"] != null) ? ConfigurationManager.AppSettings["OlosEngineUri"] : "";
@@ -65,10 +65,9 @@ namespace OlosBotApp.Dialogs
                 Utils.Log.Info("[RootDialog::MessageReceivedAsync] Activity converted");
                 Utils.Log.Warn("[RootDialog::MessageReceivedAsync] Olos Message \n\n", ObjMessage);
 
-                //it will be removed and replaced by a log
-                //await context.PostAsync($"Message Count: {this.count++} \n\n appId: [{lc_appId}] \n\n Repassando {ObjAppEntity.OlosEngineUri} \n\n\n\n {messageJson}");
                 try
                 {
+                    //Set OlosEngineUri follow de web.config definitions (use local or remote credentials)
                     string v_OlosEngineUri = (UseLocalCredentials) ? OlosEngineUri : ObjAppEntity.OlosEngineUri;
 
                     //Utils.Log.Info("[RootDialog::MessageReceivedAsync] Conecting to Olos Bot Receiver " + ObjAppEntity.OlosEngineUri);
@@ -100,6 +99,14 @@ namespace OlosBotApp.Dialogs
                             Utils.Log.Error("[RootDialog::MessageReceivedAsync] Http Error", ((System.Net.HttpWebResponse)responseFromServer).StatusCode);
                             break;
                     }
+
+                    /*
+                    Utils.Log.Info("[RootDialog::MessageReceivedAsync] Recovering content");
+                    //Return to user
+                    Utils.Log.Info("[RootDialog::MessageReceivedAsync] Sending content do user");
+                    await context.PostAsync(HttpStatusCode.OK + "->" + DateTime.Now + " userId: " + activity.From.Id);
+                    */
+
                 }
                 catch (WebException wex)
                 {
