@@ -8,6 +8,8 @@ using OlosBotApp.Utils;
 using Olos.BotProtocol;
 using System.Security.Claims;
 using System.Web;
+using System.Linq;
+
 
 namespace OlosBotApp.Dialogs
 {
@@ -71,6 +73,29 @@ namespace OlosBotApp.Dialogs
 
                     //Utils.Log.Info("[RootDialog::MessageReceivedAsync] Conecting to Olos Bot Receiver " + ObjAppEntity.OlosEngineUri);
                     Utils.Log.Info("[RootDialog::MessageReceivedAsync] Conecting to Olos Bot Receiver " + v_OlosEngineUri);
+
+                    //This code was moved from MessagesController to here and commented - it was OK!
+                    /*
+                    if (activity.Type == ActivityTypes.ConversationUpdate)
+                    {
+                        Utils.Log.Info("[MessagesController::Post] Activity ConversationUpdate Received");
+                        IConversationUpdateActivity update = activity;
+                        var client = new ConnectorClient(new Uri(update.ServiceUrl), lc_appId);
+
+                        if (update.MembersAdded.Any())
+                        {
+                            var reply = activity.CreateReply();
+                            foreach (var newMember in update.MembersAdded)
+                            {
+                                if (newMember.Id != activity.Recipient.Id)
+                                {
+                                    reply.Text = $"Bem-vindo {newMember.Name}!";
+                                    await client.Conversations.ReplyToActivityAsync(reply);
+                                }
+                            }
+                        }
+                    }
+                    */
 
                     string content;
                     DateTime dt_inicioPostJson = DateTime.Now;

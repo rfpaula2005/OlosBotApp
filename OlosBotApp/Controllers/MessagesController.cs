@@ -42,11 +42,13 @@ namespace OlosBotApp
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
             Utils.Log.Info("================== MessagesController::Post ================== ");
-            if (activity.Type == ActivityTypes.Message)
+            if ((activity.Type == ActivityTypes.Message) || (activity.Type == ActivityTypes.ConversationUpdate))
             {
                 Utils.Log.Info("[MessagesController::Post] Activity Message Received");
                 await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
             }
+            //Not in use - will be handle by RootDialog and Olos Bot Engine
+            /*
             else if (activity.Type == ActivityTypes.ConversationUpdate)
             {
                 Utils.Log.Info("[MessagesController::Post] Activity ConversationUpdate Received");
@@ -70,6 +72,7 @@ namespace OlosBotApp
                     }
                 }
             }
+            */
             else
             {
                 Utils.Log.Info("[MessagesController::Post] HandleSystemMessage Called");
