@@ -148,7 +148,6 @@
     </Content>
     <None Include="Properties\PublishProfiles\OlosBotApp - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\OlosBotApp20170704090820 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\OlosBotApp20170704090820-STAGING - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
