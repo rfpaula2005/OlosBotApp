@@ -28,7 +28,7 @@ Abaixo temos uma visão dos principais componentes.
 | Microsoft.AspNet.WebApi | v5.2.3     |                                     |
 | Microsoft.AspNet.WebApi.Core     | v5.2.3     |                            | 
 | Autofac     | v4.6.0       |                                               |
-| IIS Express     | (última)     |                                               |
+| IIS Express     | (última)     |                                           |
 
 ## Configuração
 
