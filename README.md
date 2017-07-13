@@ -9,70 +9,26 @@ The *queuemanager* module has been developed to decouple the chat bot logic from
 ![Architecture Overview](documentation/olos-bot-architecture-overview.png)
 
 
-# Deploying Olos Bot Gateway 
-
-## Premissas
-
-- Windows Server 2012 is up and running
-- IIS 8.5 is up and running
-- You have Administrator privileges
+# Deploy - Olos Bot Gateway 
 
 ## Dependências
 
-Download and install the following software in your Windows server:
+A gestão de dependências da solução é realizada de forma automática pelo **NuGet Package Manager**. Durante o processo de  *Build* o *NuGet Package Manager* realiza o processo de validação e download dos pacotes necessários à compilação da solução.
 
-| Software    | Version      | URL                                                 | Notes                                        |
-| ----------- | -------------| --------------------------------------------------- | -------------------------------------------- |
-| Node.js     | (latest)     | [https://nodejs.org/](https://nodejs.org/)                                 | The latest version as of 2017-06-23 is 8.1.2 |
-| URL Rewrite | (latest)     | [https://www.iis.net/downloads/microsoft/url-rewrite](https://www.iis.net/downloads/microsoft/url-rewrite) | This is an IIS extension provided by Microsoft. The latest version as of 2017-06-23 is 2.0 |
-| iisnode     | (latest)     | [https://github.com/tjanczuk/iisnode](https://github.com/tjanczuk/iisnode) | This is a native IIS 7/8 module for running Node.js applications in it | 
+Abaixo temos uma visão dos principais componentes.
 
-
-## Publicando o Olos Bot Gateway
-
-In the server that is running IIS, create a directory named `OlosBotReceiver` under the existing directory `C:\inetpub\wwwroot\`;
-
-Copy the contents of the olos-bot-receiver directory to the directory you have created;
-
-Via command line, cd to that directory and execute `npm install`;
-
->**Note**
->If you don't have access to the Internet from this server, you can execute this step from a different server and then transfer
->the node_modules to the target server;
-
-Give Modify permission to the IIS_IUSRS group of users in the `OlosBotReceiver` directory;
-
-Open the IIS Manager and create a new web site;
-
-Name it ``Olos Bot Receiver``;
-
-Define the physical directory as the `OlosBotReceiver`;
-
-Define a port (example 8080);
-
->**Note**
->The port you selected will be automatically passed to the Node.js application as a pipe;
-
-Right-click on the web site, Manage Website, Advanced Settings;
-
-Set the Preload Enabled flag to True;
-
-Go to Application Pools, right-click the `Olos Bot Receiver` application pool and then Advanced Settings;
-
-Set the Start Mode to AlwaysRunning;
-
-Set the Maximum Worker Process to the number of cores available to the application (example: 4);
-
-> **Note**
-> iisnode is configured to start only one Node.js process (`nodeProcessCountPerApplication="1"`),
-> so, considering the example above, there will be a maximum of 4 x 1 = 4 Node.js processes running.
-> Please notice IIS will spawn only one IIS worker process when it first starts. It will spawn additional
-> IIS worker processes (limited to 4 in the exmaple) only under load (not sure about the thresholds though). 
-
-**External References**
-
-[https://tomasz.janczuk.org/2013/07/application-initialization-of-nodejs.html](https://tomasz.janczuk.org/2013/07/application-initialization-of-nodejs.html)
-
+| Software    | Version      |  Notes                                        |
+| ----------- | -------------|  -------------------------------------------- |
+| .NetFramework     | v4.6     |                                             |
+| Microsoft.Bot.Builder     | v3.8.3     |                                   |
+| Microsoft.IdentityModel.Protocol.Extensions     |  v1.0.4.403061554        |
+| Newtonsoft.Json     | v8.0.3     |                                         |
+| WindowsAzure.Storage     | v8.1.4     |                                    |
+| Microsoft.Azure.KeyVault.Core     | v1.0.0 |                               |
+| Microsoft.AspNet.WebApi | v5.2.3     |                                     |
+| Microsoft.AspNet.WebApi.Core     | v5.2.3     |                            | 
+| Autofac     | v4.6.0       |                                               |
+| IIS Express     | (última)     |                                               |
 
 ## Configuração
 
@@ -130,34 +86,40 @@ Edit the `web.config` file and make sure it has the following environment variab
 For a complete list of configration parameters available to the iisnode module, please refer to this
 sample file: [https://github.com/tjanczuk/iisnode/blob/master/src/samples/configuration/web.config](https://github.com/tjanczuk/iisnode/blob/master/src/samples/configuration/web.config)
 
+## Publicando o Olos Bot Gateway
+
+A publicação do aplicativo para a Azure pode ser realizada por meio da funcionalide **Publish** do projeto no *Microsoft Visual Studio*, entretanto tal publicação exige a configuração de um perfil de publicação, caso o mesmo ainda não esteja configurado.
+
+**External References**
+
+[https://tomasz.janczuk.org/2013/07/application-initialization-of-nodejs.html](https://tomasz.janczuk.org/2013/07/application-initialization-of-nodejs.html)
+
+## Logs de aplicação
+
+A publicação do aplicativo para a Azure pode ser realizada por meio da funcionalide **Publish** do projeto no *Microsoft Visual Studio*, entretanto tal publicação exige a configuração de um perfil de publicação, caso o mesmo ainda não esteja configurado.
+
+## Realização de testes automatizados (JMeter)
+
+A publicação do aplicativo para a Azure pode ser realizada por meio da funcionalide **Publish** do projeto no *Microsoft Visual Studio*, entretanto tal publicação exige a configuração de um perfil de publicação, caso o mesmo ainda não esteja configurado.
 
 
 # Observações
 
-## Deploying an Express-based Node.js application in IIS
-Besides the instructions from [http://www.galaco.me/node-js-on-windows-server-2012/](http://www.galaco.me/node-js-on-windows-server-2012/)
-you shall notice the following:
-
-**bin/www**: by default the main .js file created by the Express Generator is the bin/www. Rename it to `server.js` and move it
-to the root of your application to make it simpler to work with IIS. 
-
-**web.config**: make sure the "StaticContent" rule (the one containing `<action type="Rewrite" url="public{REQUEST_URI}"/>`) comes **before**
-the "DynamicContent" (the one containing `<action type="Rewrite" url="server.js"/>`
-
-
-## Debugging
-The Olos Bot Receiver uses the [debug](https://www.npmjs.com/package/debug) module, so you can set
-the DEBUG environment variable to see debug messages from the different parts of the solution in the console.
-Examples of DEBUG environment variable:
-
-```
-DEBUG=queuemanager,api
-DEBUG=*,-express*,-body-parser*
-DEBUG=*
-```
-Please notice debug messages won't appear in the Visual Studio Code debug console (I don't know why).
+xxxxxx
 
 # Referências
 
-[Microsoft Bot Framework](https://docs.microsoft.com/en-us/bot-framework/#pivot=main&panel=overview)
-[Azure Table](https://docs.microsoft.com/en-us/azure/storage/storage-dotnet-how-to-use-tables)
+* [Microsoft Bot Framework](https://docs.microsoft.com/en-us/bot-framework/#pivot=main&panel=overview)
+* [Azure Table](https://docs.microsoft.com/en-us/azure/storage/storage-dotnet-how-to-use-tables)
+* [Configure Azure Storage connection strings](https://docs.microsoft.com/en-us/azure/storage/storage-configure-connection-string)
+* [Get started with Storage Explorer (Preview)](https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer)
+* [Create a bot with the Azure Bot Service](https://docs.microsoft.com/en-us/bot-framework/azure/azure-bot-service-quickstart)
+* [Deploy bots](https://docs.microsoft.com/en-us/bot-framework/deploy-bot-overview)
+* [Deploy a bot to Azure from Visual Studio](https://docs.microsoft.com/en-us/bot-framework/deploy-bot-visual-studio)
+* [Debug bots with emulator](https://docs.microsoft.com/en-us/bot-framework/debug-bots-emulator)
+* [Bot Emulator Download](https://github.com/Microsoft/BotFramework-Emulator/releases/tag/v3.5.29)
+* [Register a bot](https://docs.microsoft.com/en-us/bot-framework/portal-register-bot)
+* [Configure channels](https://docs.microsoft.com/en-us/bot-framework/portal-configure-channels)
+* [Enable Analytics](https://docs.microsoft.com/en-us/bot-framework/portal-analytics-overview)
+* [Set up staging environments in Azure App Service](https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-staged-publishing)
+* [Troubleshooting general problems](https://docs.microsoft.com/en-us/bot-framework/troubleshoot-general-problems)
