@@ -1,8 +1,8 @@
-# Introduction
+# Introdução
 
 # Olos Bot Gateway
 
-The Olos Bot Receiver is a standalone Node.js application that uses Express to expose a REST API to the *Olos Bot Gateway* for receiving user messages and addiding them to a message queue. It replies immediately with a *202 ACCEPTED* HTTP status. The messages are then processed asynchronously by the *Olos Bot Engine*, which is a separated Node.js application. Both uses the *queuemanager* module. The former uses it to add user messages to the queue and the latter uses it to read the messages from the queue via events.
+O Olos Bot Gateway é um webApp baseado no [Microsoft Bot Framework](https://docs.microsoft.com/en-us/bot-framework/#pivot=main&panel=overview) is a standalone Node.js application that uses Express to expose a REST API to the *Olos Bot Gateway* for receiving user messages and addiding them to a message queue. It replies immediately with a *202 ACCEPTED* HTTP status. The messages are then processed asynchronously by the *Olos Bot Engine*, which is a separated Node.js application. Both uses the *queuemanager* module. The former uses it to add user messages to the queue and the latter uses it to read the messages from the queue via events.
 
 The *queuemanager* module has been developed to decouple the chat bot logic from the underlying message queue logic. It uses the [rsmq-worker](https://github.com/mpneuried/rsmq-worker) module which uses the [RSMQ](https://www.npmjs.com/package/rsmq) module to add and consume messages from a
 [Redis](https://redis.io) server.
