@@ -78,25 +78,38 @@ Set the Maximum Worker Process to the number of cores available to the applicati
 
 ### Configure o web.config
 
-Currently the hostname/IP and port of the Redis server that the solution connects to are configured in the ``package.json`` file,
-so you need to edit this file to make sure it is pointing to the correct Redis hostname/IP and port. Also, other lower level
-configuration like pooling interval and retry parameters are configured in that file. Example:
+Praticamente todas as configurações relacionadas aos serviços utilizados e disponibilizado pelo **Bot Gateway** são realizadas por meio do arquivo ``web.config``, neste arquivo devem ser configurados os seguintes itens:
 
-```
-  "queue": {
-    "host": "10.15.15.41",
-    "port": "6379",
-    "ns": "rsmq",
-    "qname": "OlosBotMainQueue",
-    "poolingInterval": [0,1],
-    "retryDelay": 5,
-    "retryLimit": 8640
-  },
-  "receiverConfig": {
-    "httpPort": 8081,
-    "successHttpStatus": 202,
-    "successMessage": "OK"
-  }
+|Propriedade                                |Descrição  |Domínio |Obrigatoriedade  |
+|-----------------------------------------------|-----------|--------|-----------------|
+|UseLocalCredentials                            | Define o comportamento do mecanismo de validação das credenciais dos Bots **atendidos** pela aplicação.          |true; false |   Mandatório    |
+|BotId                                          | Identificação do Bot | ID-Alfanumérico  |   Opcional (Caso a a propriedade  UseLocalCredentials seja **preenchida** com **true** este atributo deve ser obrigatoriamente preenchido)     |
+|MicrosoftAppId                                 | Identificação do App | GUID          |   Opcional (Caso a a propriedade  UseLocalCredentials seja **preenchida** com **true** este atributo deve ser obrigatoriamente preenchido)     |
+|MicrosoftAppPassword                           | Password do App      | GUID          |   Opcional (Caso a a propriedade  UseLocalCredentials seja **preenchida** com **true** este atributo deve ser obrigatoriamente preenchido)     |
+|StorageConnectionString                        | String de conexão com o [Azure Table](https://docs.microsoft.com/en-us/azure/storage/storage-dotnet-how-to-use-tables) |          |   Mandatório    |
+|GatewayUrl                                     | Url do serviço REST disponibilizado para conexão com o **Olos Bot Engine** | URL (preferencialmente **https**)          |   Mandatório    |
+|OlosBotStorageOlosBotCredentialsPartitionKey   | Identificar utilizado na [Azure Table](https://docs.microsoft.com/en-us/azure/storage/storage-dotnet-how-to-use-tables) para agrupar os aplicativos atendidos pelo mesmo **Bot Gateway**      | ID-Alfanumérico |   Mandatório    |
+|OlosRegisterAppUserName                    | Usuário exigido para a conexão com a api REST e seus respectivos serviços | Alfanumérico |   Mandatório    |
+|OlosRegisterAppUserPasswd                  | Senha exigida para a conexão com a api REST e seus respectivos serviços | Alfanumérico |   Mandatório    |
+|LogLevel                                   | Nível de log a ser realizado pelo aplicativo   | None; Information; Warning; Errors; All|   Opcional (Valor *default* **None**)   |
+
+Veja abaixo um exemplo de configuração válida:
+
+```xml
+  <appSettings>
+    <!-- update these with your BotId, Microsoft App Id and your Microsoft App Password-->
+    <add key="BotId" value="" />
+    <add key="MicrosoftAppId" value="" />
+    <add key="MicrosoftAppPassword" value="" />
+    <add key="OlosEngineUri" value="" />
+    <add key="UseLocalCredentials" value="false" />
+    <add key="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=olosbotstorage;AccountKey=7zl18JlHOCzDBf/Oe57KnBRyqjlr8Qp96IPNyp5H1Soa+zrHe4LSsilAyXO8XY4NRkIYRjks/pOcVteIaqctaQ==" />
+    <add key="GatewayUrl" value="https://olosbotapp20170704090820.azurewebsites.net/api/OlosBackStageActivity/OlosSendMessage" />
+    <add key="OlosBotStorageOlosBotCredentialsPartitionKey" value="BotCredential" />
+    <add key="OlosRegisterAppUserName" value="OlosAppRegister" />
+    <add key="OlosRegisterAppUserPasswd" value="UghhFyDc}2@wutEU" />
+    <add key="LogLevel" value="None" />
+  </appSettings>
 ```
 
 As per the above example, in case Redis is unavailable, the solution will retry to connect 8640 times, waiting 5 seconds between each retry.
@@ -143,3 +156,8 @@ DEBUG=*,-express*,-body-parser*
 DEBUG=*
 ```
 Please notice debug messages won't appear in the Visual Studio Code debug console (I don't know why).
+
+# Referências
+
+[Microsoft Bot Framework](https://docs.microsoft.com/en-us/bot-framework/#pivot=main&panel=overview)
+[Azure Table](https://docs.microsoft.com/en-us/azure/storage/storage-dotnet-how-to-use-tables)
