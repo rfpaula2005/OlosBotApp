@@ -2,11 +2,9 @@
 
 # Olos Bot Gateway
 
-O Olos Bot Gateway é um webApp baseado no [Microsoft Bot Framework](https://docs.microsoft.com/en-us/bot-framework/#pivot=main&panel=overview) is a standalone Node.js application that uses Express to expose a REST API to the *Olos Bot Gateway* for receiving user messages and addiding them to a message queue. It replies immediately with a *202 ACCEPTED* HTTP status. The messages are then processed asynchronously by the *Olos Bot Engine*, which is a separated Node.js application. Both uses the *queuemanager* module. The former uses it to add user messages to the queue and the latter uses it to read the messages from the queue via events.
-
-The *queuemanager* module has been developed to decouple the chat bot logic from the underlying message queue logic. It uses the [rsmq-worker](https://github.com/mpneuried/rsmq-worker) module which uses the [RSMQ](https://www.npmjs.com/package/rsmq) module to add and consume messages from a
-[Redis](https://redis.io) server.
-![Architecture Overview](Documentacao/images/olos-bot-gateway-architecture-overview.png)
+O Olos Bot Gateway é um webApp baseado no [Microsoft Bot Framework](https://docs.microsoft.com/en-us/bot-framework/#pivot=main&panel=overview), trata-se de uma aplicação .Net desenvolvida em C# com a utilização do *Microsoft Bot Framwork SDK* e com a utilização de controllers para integração por meio da disponibilização de uma *API REST*. 
+Por meio desta *API REST* o **Olos Bot Gateway** é capaz expor o *endpoint* necessário à integração com a plataforma de gestão de Bots Microsoft [Bot Framework](https://dev.botframework.com/).
+O **Olos Bot Gateway** também disponibiliza mais dois serviços por meio da *API REST*. O primeiro é o serviço destinado à *integração* com o **Olos Bot Receiver**, por meio do qual ele recebe requisições na porta 80 para o encaminhamento de mensagens ao usuário no *canal de comunicação ativo*. O segundo é o serviço destinado à gestão das credenciais dos Bots autorizados a interagir com o **Olos Bot Gateway**.
 
 
 # Deploy - Olos Bot Gateway 
@@ -30,7 +28,15 @@ Abaixo temos uma visão dos principais componentes.
 | Autofac     | v4.6.0       |                                               |
 | IIS Express     | (última)     |                                           |
 
-## Configuração
+
+# Visão da Arquitetura
+
+![Architecture Overview](Documentacao/images/olos-bot-gateway-architecture-overview.png)
+
+## Fluxo de Mensagens
+
+
+# Configuração
 
 ### Configure o web.config
 
