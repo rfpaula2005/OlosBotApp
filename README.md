@@ -6,7 +6,7 @@ O Olos Bot Gateway é um webApp baseado no [Microsoft Bot Framework](https://doc
 
 The *queuemanager* module has been developed to decouple the chat bot logic from the underlying message queue logic. It uses the [rsmq-worker](https://github.com/mpneuried/rsmq-worker) module which uses the [RSMQ](https://www.npmjs.com/package/rsmq) module to add and consume messages from a
 [Redis](https://redis.io) server.
-![Architecture Overview](documentation/olos-bot-architecture-overview.png)
+![Architecture Overview](documentacao/images/olos-bot-gateway-architecture-overview.png)
 
 
 # Deploy - Olos Bot Gateway 
