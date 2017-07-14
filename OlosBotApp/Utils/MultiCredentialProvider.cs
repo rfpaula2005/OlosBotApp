@@ -34,7 +34,15 @@ namespace OlosBotApp.Utils
                     ObjAppEntity = Utils.AzureCloudStorageTable.getAppEntityData("OlosBotCredentials", PartitionKey, appId);
                 }
                 Utils.Log.Info("[MultiCredentialProvider::IsValidAppIdAsync] Using Azure Storage Table credentials");
-                return Task.FromResult(ObjAppEntity.RowKey.Equals(appId));
+                //Check if the client is OK
+                if (ObjAppEntity.ativo)
+                {
+                    return Task.FromResult(ObjAppEntity.RowKey.Equals(appId));
+                }
+                else
+                {
+                    return Task.FromResult(false);
+                }
             } else
             {
                 Utils.Log.Info("[MultiCredentialProvider::IsValidAppIdAsync] Using local credentials");

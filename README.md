@@ -3,7 +3,7 @@
 # Olos Bot Gateway
 
 O Olos Bot Gateway é um webApp baseado no [Microsoft Bot Framework](https://docs.microsoft.com/en-us/bot-framework/#pivot=main&panel=overview), trata-se de uma aplicação .Net desenvolvida em C# com a utilização do *Microsoft Bot Framwork SDK* e com a utilização de controllers para integração por meio da disponibilização de uma *API REST*. 
-Por meio desta *API REST* o **Olos Bot Gateway** é capaz expor o *endpoint* necessário à integração com a plataforma de gestão de Bots Microsoft [Bot Framework](https://dev.botframework.com/).
+Por meio desta *API REST* o **Olos Bot Gateway** é capaz expor o *endpoint* necessário à integração com a plataforma Microsoft [Bot Framework](https://dev.botframework.com/).
 O **Olos Bot Gateway** também disponibiliza mais dois serviços por meio da *API REST*. O primeiro é o serviço destinado à *integração* com o **Olos Bot Receiver**, por meio do qual ele recebe requisições na porta 80 para o encaminhamento de mensagens ao usuário no *canal de comunicação ativo*. O segundo é o serviço destinado à gestão das credenciais dos Bots autorizados a interagir com o **Olos Bot Gateway**.
 
 

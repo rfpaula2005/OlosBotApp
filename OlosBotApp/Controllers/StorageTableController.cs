@@ -31,7 +31,7 @@ namespace OlosBotApp.Controllers
                     if (!string.IsNullOrEmpty(AppData.PartitionKey))
                     {
 
-                        Utils.AzureCloudStorageTable.insAppEntity("OlosBotCredentials", AppData.PartitionKey, AppData.RowKey, AppData.AppPassword, AppData.BotId, AppData.OlosEngineUri);
+                        Utils.AzureCloudStorageTable.insAppEntity("OlosBotCredentials", AppData.PartitionKey, AppData.RowKey, AppData.AppPassword, AppData.BotId, AppData.OlosEngineUri, AppData.ativo);
 
                         //Return Success Message
                         var http_return = new { Code = "SUC-001", Message = "OK" };
@@ -55,6 +55,138 @@ namespace OlosBotApp.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
             }
         }
+
+
+        [AcceptVerbs("PUT")]
+        [Route("update")]
+        public HttpResponseMessage Put(AppEntity AppData)
+        {
+            httpContext = HttpContext.Current;
+
+            try
+            {
+                KeyValuePair<string, string>[] v_Cretentials = OlosFunctions.getHttpCredentials(httpContext);
+
+                //Verify Credentials
+                //if (v_Cretentials.Length > 0 && v_Cretentials[0].Key == "username" && v_Cretentials[0].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserName"] && v_Cretentials[1].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserPasswd"])
+                if (OlosFunctions.verifyCredentials(v_Cretentials))
+                {
+                    if (!string.IsNullOrEmpty(AppData.PartitionKey))
+                    {
+
+                        Utils.AzureCloudStorageTable.updAppEntity("OlosBotCredentials", AppData.PartitionKey, AppData.RowKey, AppData.AppPassword, AppData.BotId, AppData.OlosEngineUri, AppData.ativo);
+
+                        //Return Success Message
+                        var http_return = new { Code = "SUC-001", Message = "OK" };
+                        return Request.CreateResponse(HttpStatusCode.OK, http_return);
+                    }
+                    else
+                    {
+                        //Return Error Message
+                        var http_return = new { Code = "ERR-102", Message = "Your AppEntity is not well formated." };
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, http_return);
+                    }
+                }
+                else
+                {
+                    //Handle what happens if that isn't the case
+                    throw new Exception("The authorization username or password are not correct.");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
+            }
+        }
+
+        [AcceptVerbs("DELETE")]
+        [Route("delete")]
+        public HttpResponseMessage Delete(AppEntity AppData)
+        {
+            httpContext = HttpContext.Current;
+
+            try
+            {
+                KeyValuePair<string, string>[] v_Cretentials = OlosFunctions.getHttpCredentials(httpContext);
+
+                //Verify Credentials
+                //if (v_Cretentials.Length > 0 && v_Cretentials[0].Key == "username" && v_Cretentials[0].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserName"] && v_Cretentials[1].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserPasswd"])
+                if (OlosFunctions.verifyCredentials(v_Cretentials))
+                {
+                    if (!string.IsNullOrEmpty(AppData.PartitionKey))
+                    {
+
+                        Utils.AzureCloudStorageTable.delAppEntity("OlosBotCredentials", AppData.PartitionKey, AppData.RowKey);
+
+                        //Return Success Message
+                        var http_return = new { Code = "SUC-001", Message = "OK" };
+                        return Request.CreateResponse(HttpStatusCode.OK, http_return);
+                    }
+                    else
+                    {
+                        //Return Error Message
+                        var http_return = new { Code = "ERR-102", Message = "Your AppEntity is not well formated." };
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, http_return);
+                    }
+                }
+                else
+                {
+                    //Handle what happens if that isn't the case
+                    throw new Exception("The authorization username or password are not correct.");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
+            }
+        }
+
+        [AcceptVerbs("GET")]
+        [Route("listAll/{PartitionKey}")]
+        public HttpResponseMessage listAll(string PartitionKey)
+        {
+            httpContext = HttpContext.Current;
+
+            try
+            {
+                KeyValuePair<string, string>[] v_Cretentials = OlosFunctions.getHttpCredentials(httpContext);
+
+                //Verify Credentials
+                //if (v_Cretentials.Length > 0 && v_Cretentials[0].Key == "username" && v_Cretentials[0].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserName"] && v_Cretentials[1].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserPasswd"])
+                if (OlosFunctions.verifyCredentials(v_Cretentials))
+                {
+                    if (!string.IsNullOrEmpty(PartitionKey))
+                    {
+
+                        //Utils.AzureCloudStorageTable.getAllEntities("OlosBotCredentials", PartitionKey);
+
+                        //Return Success Message
+                        var http_return = Utils.AzureCloudStorageTable.getAllEntities("OlosBotCredentials", PartitionKey); ;
+                        return Request.CreateResponse(HttpStatusCode.OK, http_return);
+                    }
+                    else
+                    {
+                        //Return Error Message
+                        var http_return = new { Code = "ERR-102", Message = "Your PartitionKey is not well formated." };
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, http_return);
+                    }
+
+                }
+                else
+                {
+                    //Handle what happens if that isn't the case
+                    throw new Exception("The authorization username or password are not correct.");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
+            }
+        }
+
 
     }
 }

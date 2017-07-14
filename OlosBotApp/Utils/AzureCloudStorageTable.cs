@@ -2,7 +2,7 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Configuration;
-
+using System.Collections.Generic;
 
 namespace OlosBotApp.Utils
 {
@@ -15,6 +15,8 @@ namespace OlosBotApp.Utils
         public string AppPassword { get; set; }
         public string BotId { get; set; }
         public string OlosEngineUri { get; set; }
+        public bool ativo { get; set; }
+
 
         public AppEntity(string AppId, string AppPassword)
         {
@@ -40,6 +42,7 @@ namespace OlosBotApp.Utils
         public string AppPassword { get; set; }
         public string BotId { get; set; }
         public string OlosEngineUri { get; set; }
+        public bool ativo { get; set; }
 
         public TElementAppEntity(string AppId, string AppPassword)
         {
@@ -65,6 +68,7 @@ namespace OlosBotApp.Utils
             ObjAppEntity.AppPassword = this.AppPassword;
             ObjAppEntity.BotId = this.BotId;
             ObjAppEntity.OlosEngineUri = this.OlosEngineUri;
+            ObjAppEntity.ativo = this.ativo;
 
             return ObjAppEntity;
         }
@@ -129,7 +133,7 @@ namespace OlosBotApp.Utils
 
 
 
-        public static void insAppEntity(string strCloudTableName, string PartitionKey, string RowKey, string appPasword, string botId, string OlosEngineUri)
+        public static void insAppEntity(string strCloudTableName, string PartitionKey, string RowKey, string appPasword, string botId, string OlosEngineUri, bool ativo)
         {
             // Get a reference to a strCloudTableName table
             CloudTable table = getCloudTable(strCloudTableName);
@@ -138,11 +142,89 @@ namespace OlosBotApp.Utils
             TElementAppEntity appBot = new TElementAppEntity(PartitionKey, RowKey, appPasword);
             appBot.BotId = botId;
             appBot.OlosEngineUri = OlosEngineUri;
+            appBot.ativo = ativo;
 
             // Create the TableOperation object that inserts the appBot entity.
             TableOperation insertOperation = TableOperation.Insert(appBot);
             // Execute the insert operation.
             table.Execute(insertOperation);
+        }
+
+        public static void updAppEntity(string strCloudTableName, string PartitionKey, string RowKey, string appPasword, string botId, string OlosEngineUri, bool ativo)
+        {
+
+            TableResult retrievedResult = getAppEntity(strCloudTableName, PartitionKey, RowKey);
+
+            // Assign the result to a CustomerEntity object.
+            TElementAppEntity updateEntity = (TElementAppEntity)retrievedResult.Result;
+
+            if (updateEntity != null)
+            {
+                // Change data.
+                updateEntity.AppPassword = appPasword;
+                updateEntity.BotId = botId;
+                updateEntity.OlosEngineUri = OlosEngineUri;
+                updateEntity.ativo = ativo;
+
+                // Create the Replace TableOperation.
+                TableOperation updateOperation = TableOperation.Replace(updateEntity);
+                // Get table
+                CloudTable table = getCloudTable(strCloudTableName);
+                // Execute the operation.
+                table.Execute(updateOperation);
+            }
+            else
+            {
+                //Console.WriteLine("Entity could not be retrieved.");
+            }
+
+        }
+
+
+        public static void delAppEntity(string strCloudTableName, string PartitionKey, string RowKey)
+        {
+
+            TableResult retrievedResult = getAppEntity(strCloudTableName, PartitionKey, RowKey);
+
+            // Assign the result to a CustomerEntity object.
+            TElementAppEntity deleteEntity = (TElementAppEntity)retrievedResult.Result;
+
+            // Create the Delete TableOperation.
+            if (deleteEntity != null)
+            {
+                TableOperation deleteOperation = TableOperation.Delete(deleteEntity);
+
+                // Get table
+                CloudTable table = getCloudTable(strCloudTableName);
+                // Execute the operation.
+                table.Execute(deleteOperation);
+                //Console.WriteLine("Entity deleted.");
+            }
+            else
+            {
+                //Console.WriteLine("Could not retrieve the entity.");
+            }
+        }
+
+
+
+        public static List<AppEntity> getAllEntities(string strCloudTableName, string PartitionKey)
+        {
+            // Get a reference to a strCloudTableName table
+            CloudTable table = getCloudTable(strCloudTableName);
+
+            // Construct the query operation for all customer entities where PartitionKey="Smith".
+            TableQuery<TElementAppEntity> query = new TableQuery<TElementAppEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, PartitionKey));
+
+            // Print the fields for each customer.
+            // Create a new customer entity.
+            List<AppEntity> appEntityList = new List<AppEntity>();
+            foreach (TElementAppEntity entity in table.ExecuteQuery(query))
+            {
+                AppEntity item = entity.ConvertToAppEntity();
+                appEntityList.Add(item);
+            }
+            return appEntityList;
         }
 
     }
