@@ -77,7 +77,7 @@ namespace OlosBotApp.Utils
 
     public class AzureCloudStorageTable
     {
-
+        // Return a CloudTable from Azure Table Storage 
         public static CloudTable getCloudTable(string strCloudTableName)
         {
             // Set storage Account
@@ -91,6 +91,7 @@ namespace OlosBotApp.Utils
             return table;
         }
 
+        // Create and return a CloudTable from Azure Table Storage 
         public static CloudTable createCloudTable(string strCloudTableName)
         {
             // Get a reference to a strCloudTableName table
@@ -102,7 +103,7 @@ namespace OlosBotApp.Utils
             return table;
         }
 
-
+        // Return a TableResult element from a Azure Table Storage
         public static TableResult getAppEntity(string strCloudTableName, string PartitionKey, string RowKey)
         {
             // Get a reference to a strCloudTableName table
@@ -116,6 +117,7 @@ namespace OlosBotApp.Utils
             return retrievedResult;
         }
 
+        // Return a AppEntity element from a Azure Table Storage
         public static AppEntity getAppEntityData(string strCloudTableName, string PartitionKey, string RowKey)
         {
             // Get a reference to a strCloudTableName table
@@ -132,7 +134,7 @@ namespace OlosBotApp.Utils
         }
 
 
-
+        // Create and Add a AppEntity on a Azure Table Storage
         public static void insAppEntity(string strCloudTableName, string PartitionKey, string RowKey, string appPasword, string botId, string OlosEngineUri, bool ativo)
         {
             // Get a reference to a strCloudTableName table
@@ -150,6 +152,7 @@ namespace OlosBotApp.Utils
             table.Execute(insertOperation);
         }
 
+        // Update a AppEntity on a Azure Table Storage
         public static void updAppEntity(string strCloudTableName, string PartitionKey, string RowKey, string appPasword, string botId, string OlosEngineUri, bool ativo)
         {
 
@@ -181,6 +184,7 @@ namespace OlosBotApp.Utils
         }
 
 
+        // Remove a AppEntity on a Azure Table Storage
         public static void delAppEntity(string strCloudTableName, string PartitionKey, string RowKey)
         {
 
@@ -208,6 +212,7 @@ namespace OlosBotApp.Utils
 
 
 
+        // List All AppEntities on a Azure Table Storage
         public static List<AppEntity> getAllEntities(string strCloudTableName, string PartitionKey)
         {
             // Get a reference to a strCloudTableName table

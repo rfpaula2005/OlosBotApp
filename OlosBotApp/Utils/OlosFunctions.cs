@@ -84,6 +84,7 @@ namespace OlosBotApp.Utils
         }
 
         // Verify Basic Authentication
+        // Receive a KeyValuePair <string, string> and check the values against the keys OlosRegisterAppUserName and OlosRegisterAppUserPasswd on the web.config
         public static bool verifyCredentials(KeyValuePair<string, string>[] v_Cretentials)
         {
             if (v_Cretentials.Length > 0 && v_Cretentials[0].Key == "username" && v_Cretentials[0].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserName"] && v_Cretentials[1].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserPasswd"])

@@ -19,7 +19,6 @@ namespace OlosBotApp.Controllers
 
         [AcceptVerbs("POST")]
         [Route("OlosSendMessage")]
-        //public async Task<HttpResponseMessage> OlosSendMessage(OlosActivityModel Mensagem)
         public async Task<HttpResponseMessage> OlosSendMessage(Message OlosMessage)
         {
             Utils.Log.Info("================== OlosActivityController::OlosSendMessage ================== ");
@@ -83,31 +82,31 @@ namespace OlosBotApp.Controllers
 
 
         //Create and send a message to user
-        public static async Task Resume(Message OlosMessage2)
+        public static async Task Resume(Message OlosMessage)
         {
             
             Utils.Log.Info("================== OlosActivityController::Resume ================== ");
             Utils.Log.Info("[OlosActivityController::Resume] Creating connector.");
             //Create Connector
-            var connector = new ConnectorClient(new Uri(OlosMessage2.ServiceUrl), OlosMessage2.AppId);
+            var connector = new ConnectorClient(new Uri(OlosMessage.ServiceUrl), OlosMessage.AppId);
 
             Utils.Log.Info("[OlosActivityController::Resume] Creating activity.");
             IMessageActivity message = Activity.CreateMessageActivity();
             Utils.Log.Info("[OlosActivityController::Resume] Activity created.");
 
-            if (!string.IsNullOrEmpty(OlosMessage2.ConversationId) && !string.IsNullOrEmpty(OlosMessage2.ChannelId))
+            if (!string.IsNullOrEmpty(OlosMessage.ConversationId) && !string.IsNullOrEmpty(OlosMessage.ChannelId))
             {
                 Utils.Log.Info("[OlosActivityController::Resume] Activity validated.");
-                message.ChannelId = OlosMessage2.ChannelId;
+                message.ChannelId = OlosMessage.ChannelId;
             }
             else
             {
                 Utils.Log.Info("[OlosActivityController::Resume] Activity rebuilt.");
-                OlosMessage2.ConversationId = (await connector.Conversations.CreateDirectConversationAsync(OlosMessage2.From.ConvertToChannelAccount(), OlosMessage2.To.ConvertToChannelAccount())).Id;
+                OlosMessage.ConversationId = (await connector.Conversations.CreateDirectConversationAsync(OlosMessage.From.ConvertToChannelAccount(), OlosMessage.To.ConvertToChannelAccount())).Id;
             }
 
-            Utils.Log.Warn("[OlosActivityController::Resume] Sending message to user", (Activity)OlosMessage2.ConvertToActivity());
-            await connector.Conversations.SendToConversationAsync((Activity)OlosMessage2.ConvertToActivity());
+            Utils.Log.Warn("[OlosActivityController::Resume] Sending message to user", (Activity)OlosMessage.ConvertToActivity());
+            await connector.Conversations.SendToConversationAsync((Activity)OlosMessage.ConvertToActivity());
         }
 
     }

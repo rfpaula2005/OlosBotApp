@@ -9,13 +9,13 @@ using System.Collections.Generic;
 
 namespace OlosBotApp.Controllers
 {
-    [RoutePrefix("api/OlosRegisterApp")]
+    [RoutePrefix("api/OlosAppCredentials")]
     public class StorageTableController : ApiController
     {
         private HttpContext httpContext;
 
         [AcceptVerbs("POST")]
-        [Route("insere")]
+        [Route("insCredential")]
         public HttpResponseMessage Post(AppEntity AppData)
         {
             httpContext = HttpContext.Current;
@@ -25,7 +25,6 @@ namespace OlosBotApp.Controllers
                 KeyValuePair<string, string>[] v_Cretentials = OlosFunctions.getHttpCredentials(httpContext);
 
                 //Verify Credentials
-                //if (v_Cretentials.Length > 0 && v_Cretentials[0].Key == "username" && v_Cretentials[0].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserName"] && v_Cretentials[1].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserPasswd"])
                 if (OlosFunctions.verifyCredentials(v_Cretentials))
                 {
                     if (!string.IsNullOrEmpty(AppData.PartitionKey))
@@ -58,7 +57,7 @@ namespace OlosBotApp.Controllers
 
 
         [AcceptVerbs("PUT")]
-        [Route("update")]
+        [Route("updCredential")]
         public HttpResponseMessage Put(AppEntity AppData)
         {
             httpContext = HttpContext.Current;
@@ -68,7 +67,6 @@ namespace OlosBotApp.Controllers
                 KeyValuePair<string, string>[] v_Cretentials = OlosFunctions.getHttpCredentials(httpContext);
 
                 //Verify Credentials
-                //if (v_Cretentials.Length > 0 && v_Cretentials[0].Key == "username" && v_Cretentials[0].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserName"] && v_Cretentials[1].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserPasswd"])
                 if (OlosFunctions.verifyCredentials(v_Cretentials))
                 {
                     if (!string.IsNullOrEmpty(AppData.PartitionKey))
@@ -101,7 +99,7 @@ namespace OlosBotApp.Controllers
         }
 
         [AcceptVerbs("DELETE")]
-        [Route("delete")]
+        [Route("delCredential")]
         public HttpResponseMessage Delete(AppEntity AppData)
         {
             httpContext = HttpContext.Current;
@@ -111,7 +109,6 @@ namespace OlosBotApp.Controllers
                 KeyValuePair<string, string>[] v_Cretentials = OlosFunctions.getHttpCredentials(httpContext);
 
                 //Verify Credentials
-                //if (v_Cretentials.Length > 0 && v_Cretentials[0].Key == "username" && v_Cretentials[0].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserName"] && v_Cretentials[1].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserPasswd"])
                 if (OlosFunctions.verifyCredentials(v_Cretentials))
                 {
                     if (!string.IsNullOrEmpty(AppData.PartitionKey))
@@ -144,7 +141,7 @@ namespace OlosBotApp.Controllers
         }
 
         [AcceptVerbs("GET")]
-        [Route("listAll/{PartitionKey}")]
+        [Route("listCredentials/{PartitionKey}")]
         public HttpResponseMessage listAll(string PartitionKey)
         {
             httpContext = HttpContext.Current;
@@ -154,14 +151,10 @@ namespace OlosBotApp.Controllers
                 KeyValuePair<string, string>[] v_Cretentials = OlosFunctions.getHttpCredentials(httpContext);
 
                 //Verify Credentials
-                //if (v_Cretentials.Length > 0 && v_Cretentials[0].Key == "username" && v_Cretentials[0].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserName"] && v_Cretentials[1].Value == ConfigurationManager.AppSettings["OlosRegisterAppUserPasswd"])
                 if (OlosFunctions.verifyCredentials(v_Cretentials))
                 {
                     if (!string.IsNullOrEmpty(PartitionKey))
                     {
-
-                        //Utils.AzureCloudStorageTable.getAllEntities("OlosBotCredentials", PartitionKey);
-
                         //Return Success Message
                         var http_return = Utils.AzureCloudStorageTable.getAllEntities("OlosBotCredentials", PartitionKey); ;
                         return Request.CreateResponse(HttpStatusCode.OK, http_return);
