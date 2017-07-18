@@ -65,6 +65,13 @@ namespace OlosBotApp.Utils
 
         public static DetailLevel level = DetailLevel.None;
 
+        static Log()
+        {
+            //Initialize logLevel
+            Utils.Log.level = Utils.Log.StringToDetailLevel(((System.Configuration.ConfigurationManager.AppSettings["LogLevel"] != null) ? System.Configuration.ConfigurationManager.AppSettings["LogLevel"] : "All"));
+        }
+
+
         private static LogMessage GetMessage(string message, object debugData)
         {
             return new LogMessage() { message = message, json = debugData };

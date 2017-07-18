@@ -12,14 +12,14 @@ using System.Collections.Generic;
 
 namespace OlosBotApp.Controllers
 {
-    [RoutePrefix("api/OlosBackStageActivity")]
+    [RoutePrefix("api/olos/messages")]
     public class OlosActivityController : ApiController
     {
         private HttpContext httpContext;
 
         [AcceptVerbs("POST")]
-        [Route("OlosSendMessage")]
-        public async Task<HttpResponseMessage> OlosSendMessage(Message OlosMessage)
+        [Route("sendMessage")]
+        public async Task<HttpResponseMessage> sendMessage(Message OlosMessage)
         {
             Utils.Log.Info("================== OlosActivityController::OlosSendMessage ================== ");
             Utils.Log.Warn("[OlosActivityController::OlosSendMessage] Message Received ", OlosMessage);

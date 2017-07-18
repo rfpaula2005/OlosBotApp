@@ -110,7 +110,7 @@ namespace OlosBotApp.Dialogs
                             Utils.Log.Info("[RootDialog::MessageReceivedAsync] Recovering content");
                             content = OlosFunctions.GetResponseStrContent(responseFromServer);
                             //Log
-                            await context.PostAsync(HttpStatusCode.Accepted + "->" + content);
+                            //await context.PostAsync(HttpStatusCode.Accepted + "->" + content);
                             //context.Wait(MessageReceivedAsync);
                             break;
                         case HttpStatusCode.OK:
@@ -118,7 +118,8 @@ namespace OlosBotApp.Dialogs
                             content = OlosFunctions.GetResponseStrContent(responseFromServer);
                             //Return to user
                             Utils.Log.Info("[RootDialog::MessageReceivedAsync] Sending content do user");
-                            await context.PostAsync(HttpStatusCode.OK + "->" + content);
+                            await context.PostAsync(content);
+                            //await context.PostAsync(HttpStatusCode.OK + "->" + content);
                             //context.Wait(MessageReceivedAsync);
                             break;
                         default:

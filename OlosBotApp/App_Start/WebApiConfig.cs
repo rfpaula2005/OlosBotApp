@@ -24,7 +24,7 @@ namespace OlosBotApp
 
             // Web API configuration and services
             //Initialize logLevel
-            Utils.Log.level = Utils.Log.StringToDetailLevel(((System.Configuration.ConfigurationManager.AppSettings["LogLevel"] != null) ? System.Configuration.ConfigurationManager.AppSettings["LogLevel"] : "All"));
+            //Utils.Log.level = Utils.Log.StringToDetailLevel(((System.Configuration.ConfigurationManager.AppSettings["LogLevel"] != null) ? System.Configuration.ConfigurationManager.AppSettings["LogLevel"] : "All"));
 
             // Web API routes
             config.MapHttpAttributeRoutes();
